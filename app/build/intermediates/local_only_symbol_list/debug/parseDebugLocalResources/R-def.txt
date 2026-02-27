@@ -1,0 +1,9 @@
+R_DEF: Internal format may change without notice
+local
+mipmap ic_launcher
+mipmap ic_launcher_round
+string accessibility_service_description
+string accessibility_service_label
+string app_name
+style Theme.OpenPaw
+xml accessibility_service_config

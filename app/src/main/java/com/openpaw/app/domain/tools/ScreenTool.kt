@@ -1,0 +1,121 @@
+package com.openpaw.app.domain.tools
+
+import com.openpaw.app.service.OpenPawAccessibilityService
+import kotlinx.coroutines.suspendCancellableCoroutine
+import javax.inject.Inject
+import javax.inject.Singleton
+import kotlin.coroutines.resume
+
+/**
+ * Gives the AI agent full control over the Android screen via AccessibilityService.
+ *
+ * Exposed sub-tools:
+ *   action=read   → dump all visible text + interactive elements
+ *   action=click  → click element matching query text
+ *   action=input  → type text into a field
+ *   action=scroll → scroll up/down/left/right
+ *   action=swipe  → swipe gesture (for apps without a11y nodes)
+ *   action=tap    → tap at exact x,y coordinates
+ *   action=back   → press Back
+ *   action=home   → press Home
+ */
+@Singleton
+class ScreenTool @Inject constructor() : Tool {
+
+    override val name = "control_screen"
+    override val description = """
+        Read the current Android screen content or interact with UI elements.
+        The AI agent can read text, click buttons, type into fields, and scroll — just like a human.
+        Requires the OpenPaw Accessibility Service to be enabled in system Settings → Accessibility.
+    """.trimIndent()
+
+    override val parameters = mapOf(
+        "action" to ToolParameter("string", "What to do: 'read', 'click', 'input', 'scroll', 'swipe', 'tap', 'back', 'home', 'recents'"),
+        "query" to ToolParameter("string", "For 'click': text/label/id of element to click. For 'input': field hint or leave empty for focused field."),
+        "text" to ToolParameter("string", "For 'input': the text to type."),
+        "direction" to ToolParameter("string", "For 'scroll'/'swipe': 'up', 'down', 'left', 'right'."),
+        "x" to ToolParameter("number", "For 'tap': x coordinate in screen pixels."),
+        "y" to ToolParameter("number", "For 'tap': y coordinate in screen pixels.")
+    )
+    override val requiredParameters = listOf("action")
+
+    override suspend fun execute(input: Map<String, Any>): ToolResult {
+        val service = OpenPawAccessibilityService.instance.value
+            ?: return ToolResult(
+                success = false,
+                output = "AccessibilityService not active. Please enable 'OpenPaw' under Settings → Accessibility → Installed services."
+            )
+
+        return when (val action = input["action"] as? String) {
+
+            "read" -> {
+                val screen = service.readScreen()
+                ToolResult(true, "Current screen:\n$screen")
+            }
+
+            "click" -> {
+                val query = input["query"] as? String
+                    ?: return ToolResult(false, "Provide 'query' (text to click).")
+                val ok = service.clickElement(query)
+                if (ok) ToolResult(true, "Clicked: '$query'")
+                else ToolResult(false, "Element '$query' not found on screen. Try 'read' first to see what's visible.")
+            }
+
+            "input" -> {
+                val text = input["text"] as? String
+                    ?: return ToolResult(false, "Provide 'text' to type.")
+                val fieldHint = input["query"] as? String ?: ""
+                val ok = service.inputText(text, fieldHint)
+                if (ok) ToolResult(true, "Typed '$text' into ${if (fieldHint.isBlank()) "focused field" else "'$fieldHint'"}")
+                else ToolResult(false, "Could not find editable field. Tap a text field first.")
+            }
+
+            "scroll" -> {
+                val dir = input["direction"] as? String ?: "down"
+                val ok = service.scroll(dir)
+                if (ok) ToolResult(true, "Scrolled $dir")
+                else ToolResult(false, "No scrollable element found.")
+            }
+
+            "swipe" -> {
+                val dir = input["direction"] as? String ?: "up"
+                val ok = suspendCancellableCoroutine<Boolean> { cont ->
+                    service.swipe(dir) { cont.resume(it) }
+                }
+                if (ok) ToolResult(true, "Swiped $dir")
+                else ToolResult(false, "Swipe gesture cancelled.")
+            }
+
+            "tap" -> {
+                val x = (input["x"] as? Number)?.toFloat()
+                    ?: return ToolResult(false, "Provide 'x' coordinate.")
+                val y = (input["y"] as? Number)?.toFloat()
+                    ?: return ToolResult(false, "Provide 'y' coordinate.")
+                val ok = suspendCancellableCoroutine<Boolean> { cont ->
+                    service.tapAt(x, y) { cont.resume(it) }
+                }
+                if (ok) ToolResult(true, "Tapped at ($x, $y)")
+                else ToolResult(false, "Tap at ($x, $y) failed.")
+            }
+
+            "back" -> {
+                service.pressBack()
+                ToolResult(true, "Pressed Back")
+            }
+            "home" -> {
+                service.pressHome()
+                ToolResult(true, "Pressed Home")
+            }
+            "recents" -> {
+                service.pressRecents()
+                ToolResult(true, "Pressed Recents")
+            }
+            "notifications" -> {
+                service.pressNotifications()
+                ToolResult(true, "Opened notification shade")
+            }
+
+            else -> ToolResult(false, "Unknown action '$action'. Use: read, click, input, scroll, swipe, tap, back, home, recents")
+        }
+    }
+}

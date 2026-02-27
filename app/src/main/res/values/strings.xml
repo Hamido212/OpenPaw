@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">OpenPaw</string>
+    <string name="accessibility_service_label">OpenPaw Agent</string>
+    <string name="accessibility_service_description">Allows OpenPaw to read screen content, click elements, and type text so the AI agent can control your phone on your behalf.</string>
+</resources>
