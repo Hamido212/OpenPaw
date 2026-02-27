@@ -38,9 +38,16 @@ import com.openpaw.app.domain.tools.WhatsAppTool;
 import com.openpaw.app.domain.usecase.AgentUseCase;
 import com.openpaw.app.presentation.chat.ChatViewModel;
 import com.openpaw.app.presentation.chat.ChatViewModel_HiltModules;
+import com.openpaw.app.presentation.onboarding.OnboardingViewModel;
+import com.openpaw.app.presentation.onboarding.OnboardingViewModel_HiltModules;
 import com.openpaw.app.presentation.settings.SettingsViewModel;
 import com.openpaw.app.presentation.settings.SettingsViewModel_HiltModules;
+import com.openpaw.app.presentation.tile.OpenPawQsTile;
+import com.openpaw.app.presentation.tile.OpenPawQsTile_MembersInjector;
+import com.openpaw.app.presentation.voice.VoiceInputManager;
 import com.openpaw.app.service.AgentForegroundService;
+import com.openpaw.app.service.FloatingBubbleService;
+import com.openpaw.app.service.FloatingBubbleService_MembersInjector;
 import dagger.hilt.android.ActivityRetainedLifecycle;
 import dagger.hilt.android.ViewModelLifecycle;
 import dagger.hilt.android.internal.builders.ActivityComponentBuilder;
@@ -394,6 +401,7 @@ public final class DaggerOpenPawApplication_HiltComponents_SingletonC {
 
     @Override
     public void injectMainActivity(MainActivity mainActivity) {
+      injectMainActivity2(mainActivity);
     }
 
     @Override
@@ -403,7 +411,7 @@ public final class DaggerOpenPawApplication_HiltComponents_SingletonC {
 
     @Override
     public Map<Class<?>, Boolean> getViewModelKeys() {
-      return LazyClassKeyMap.<Boolean>of(MapBuilder.<String, Boolean>newMapBuilder(2).put(LazyClassKeyProvider.com_openpaw_app_presentation_chat_ChatViewModel, ChatViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_openpaw_app_presentation_settings_SettingsViewModel, SettingsViewModel_HiltModules.KeyModule.provide()).build());
+      return LazyClassKeyMap.<Boolean>of(MapBuilder.<String, Boolean>newMapBuilder(3).put(LazyClassKeyProvider.com_openpaw_app_presentation_chat_ChatViewModel, ChatViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_openpaw_app_presentation_onboarding_OnboardingViewModel, OnboardingViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_openpaw_app_presentation_settings_SettingsViewModel, SettingsViewModel_HiltModules.KeyModule.provide()).build());
     }
 
     @Override
@@ -421,17 +429,28 @@ public final class DaggerOpenPawApplication_HiltComponents_SingletonC {
       return new ViewCBuilder(singletonCImpl, activityRetainedCImpl, activityCImpl);
     }
 
+    private MainActivity injectMainActivity2(MainActivity instance) {
+      MainActivity_MembersInjector.injectVoiceInputManager(instance, singletonCImpl.voiceInputManagerProvider.get());
+      MainActivity_MembersInjector.injectSettingsRepository(instance, singletonCImpl.settingsRepositoryProvider.get());
+      return instance;
+    }
+
     @IdentifierNameString
     private static final class LazyClassKeyProvider {
+      static String com_openpaw_app_presentation_chat_ChatViewModel = "com.openpaw.app.presentation.chat.ChatViewModel";
+
       static String com_openpaw_app_presentation_settings_SettingsViewModel = "com.openpaw.app.presentation.settings.SettingsViewModel";
 
-      static String com_openpaw_app_presentation_chat_ChatViewModel = "com.openpaw.app.presentation.chat.ChatViewModel";
+      static String com_openpaw_app_presentation_onboarding_OnboardingViewModel = "com.openpaw.app.presentation.onboarding.OnboardingViewModel";
+
+      @KeepFieldType
+      ChatViewModel com_openpaw_app_presentation_chat_ChatViewModel2;
 
       @KeepFieldType
       SettingsViewModel com_openpaw_app_presentation_settings_SettingsViewModel2;
 
       @KeepFieldType
-      ChatViewModel com_openpaw_app_presentation_chat_ChatViewModel2;
+      OnboardingViewModel com_openpaw_app_presentation_onboarding_OnboardingViewModel2;
     }
   }
 
@@ -443,6 +462,8 @@ public final class DaggerOpenPawApplication_HiltComponents_SingletonC {
     private final ViewModelCImpl viewModelCImpl = this;
 
     private Provider<ChatViewModel> chatViewModelProvider;
+
+    private Provider<OnboardingViewModel> onboardingViewModelProvider;
 
     private Provider<SettingsViewModel> settingsViewModelProvider;
 
@@ -460,12 +481,13 @@ public final class DaggerOpenPawApplication_HiltComponents_SingletonC {
     private void initialize(final SavedStateHandle savedStateHandleParam,
         final ViewModelLifecycle viewModelLifecycleParam) {
       this.chatViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 0);
-      this.settingsViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 1);
+      this.onboardingViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 1);
+      this.settingsViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 2);
     }
 
     @Override
     public Map<Class<?>, javax.inject.Provider<ViewModel>> getHiltViewModelMap() {
-      return LazyClassKeyMap.<javax.inject.Provider<ViewModel>>of(MapBuilder.<String, javax.inject.Provider<ViewModel>>newMapBuilder(2).put(LazyClassKeyProvider.com_openpaw_app_presentation_chat_ChatViewModel, ((Provider) chatViewModelProvider)).put(LazyClassKeyProvider.com_openpaw_app_presentation_settings_SettingsViewModel, ((Provider) settingsViewModelProvider)).build());
+      return LazyClassKeyMap.<javax.inject.Provider<ViewModel>>of(MapBuilder.<String, javax.inject.Provider<ViewModel>>newMapBuilder(3).put(LazyClassKeyProvider.com_openpaw_app_presentation_chat_ChatViewModel, ((Provider) chatViewModelProvider)).put(LazyClassKeyProvider.com_openpaw_app_presentation_onboarding_OnboardingViewModel, ((Provider) onboardingViewModelProvider)).put(LazyClassKeyProvider.com_openpaw_app_presentation_settings_SettingsViewModel, ((Provider) settingsViewModelProvider)).build());
     }
 
     @Override
@@ -475,15 +497,20 @@ public final class DaggerOpenPawApplication_HiltComponents_SingletonC {
 
     @IdentifierNameString
     private static final class LazyClassKeyProvider {
-      static String com_openpaw_app_presentation_chat_ChatViewModel = "com.openpaw.app.presentation.chat.ChatViewModel";
+      static String com_openpaw_app_presentation_onboarding_OnboardingViewModel = "com.openpaw.app.presentation.onboarding.OnboardingViewModel";
 
       static String com_openpaw_app_presentation_settings_SettingsViewModel = "com.openpaw.app.presentation.settings.SettingsViewModel";
 
+      static String com_openpaw_app_presentation_chat_ChatViewModel = "com.openpaw.app.presentation.chat.ChatViewModel";
+
       @KeepFieldType
-      ChatViewModel com_openpaw_app_presentation_chat_ChatViewModel2;
+      OnboardingViewModel com_openpaw_app_presentation_onboarding_OnboardingViewModel2;
 
       @KeepFieldType
       SettingsViewModel com_openpaw_app_presentation_settings_SettingsViewModel2;
+
+      @KeepFieldType
+      ChatViewModel com_openpaw_app_presentation_chat_ChatViewModel2;
     }
 
     private static final class SwitchingProvider<T> implements Provider<T> {
@@ -508,9 +535,12 @@ public final class DaggerOpenPawApplication_HiltComponents_SingletonC {
       public T get() {
         switch (id) {
           case 0: // com.openpaw.app.presentation.chat.ChatViewModel 
-          return (T) new ChatViewModel(singletonCImpl.agentUseCaseProvider.get(), singletonCImpl.messageDao(), singletonCImpl.settingsRepositoryProvider.get());
+          return (T) new ChatViewModel(singletonCImpl.agentUseCaseProvider.get(), singletonCImpl.messageDao(), singletonCImpl.settingsRepositoryProvider.get(), singletonCImpl.voiceInputManagerProvider.get());
 
-          case 1: // com.openpaw.app.presentation.settings.SettingsViewModel 
+          case 1: // com.openpaw.app.presentation.onboarding.OnboardingViewModel 
+          return (T) new OnboardingViewModel(singletonCImpl.settingsRepositoryProvider.get());
+
+          case 2: // com.openpaw.app.presentation.settings.SettingsViewModel 
           return (T) new SettingsViewModel(singletonCImpl.settingsRepositoryProvider.get());
 
           default: throw new AssertionError(id);
@@ -588,7 +618,27 @@ public final class DaggerOpenPawApplication_HiltComponents_SingletonC {
     }
 
     @Override
+    public void injectOpenPawQsTile(OpenPawQsTile openPawQsTile) {
+      injectOpenPawQsTile2(openPawQsTile);
+    }
+
+    @Override
     public void injectAgentForegroundService(AgentForegroundService agentForegroundService) {
+    }
+
+    @Override
+    public void injectFloatingBubbleService(FloatingBubbleService floatingBubbleService) {
+      injectFloatingBubbleService2(floatingBubbleService);
+    }
+
+    private OpenPawQsTile injectOpenPawQsTile2(OpenPawQsTile instance) {
+      OpenPawQsTile_MembersInjector.injectVoiceInputManager(instance, singletonCImpl.voiceInputManagerProvider.get());
+      return instance;
+    }
+
+    private FloatingBubbleService injectFloatingBubbleService2(FloatingBubbleService instance2) {
+      FloatingBubbleService_MembersInjector.injectVoiceInputManager(instance2, singletonCImpl.voiceInputManagerProvider.get());
+      return instance2;
     }
   }
 
@@ -597,13 +647,15 @@ public final class DaggerOpenPawApplication_HiltComponents_SingletonC {
 
     private final SingletonCImpl singletonCImpl = this;
 
+    private Provider<VoiceInputManager> voiceInputManagerProvider;
+
+    private Provider<SettingsRepository> settingsRepositoryProvider;
+
     private Provider<OkHttpClient> provideOkHttpClientProvider;
 
     private Provider<Gson> provideGsonProvider;
 
     private Provider<AnthropicApiService> provideAnthropicApiServiceProvider;
-
-    private Provider<SettingsRepository> settingsRepositoryProvider;
 
     private Provider<AnthropicLlmProvider> anthropicLlmProvider;
 
@@ -657,28 +709,29 @@ public final class DaggerOpenPawApplication_HiltComponents_SingletonC {
 
     @SuppressWarnings("unchecked")
     private void initialize(final ApplicationContextModule applicationContextModuleParam) {
-      this.provideOkHttpClientProvider = DoubleCheck.provider(new SwitchingProvider<OkHttpClient>(singletonCImpl, 4));
-      this.provideGsonProvider = DoubleCheck.provider(new SwitchingProvider<Gson>(singletonCImpl, 5));
-      this.provideAnthropicApiServiceProvider = DoubleCheck.provider(new SwitchingProvider<AnthropicApiService>(singletonCImpl, 3));
-      this.settingsRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<SettingsRepository>(singletonCImpl, 6));
-      this.anthropicLlmProvider = DoubleCheck.provider(new SwitchingProvider<AnthropicLlmProvider>(singletonCImpl, 2));
-      this.provideAzureOpenAiApiServiceProvider = DoubleCheck.provider(new SwitchingProvider<AzureOpenAiApiService>(singletonCImpl, 8));
-      this.azureOpenAiLlmProvider = DoubleCheck.provider(new SwitchingProvider<AzureOpenAiLlmProvider>(singletonCImpl, 7));
-      this.localLlmProvider = DoubleCheck.provider(new SwitchingProvider<LocalLlmProvider>(singletonCImpl, 9));
-      this.delegatingLlmProvider = DoubleCheck.provider(new SwitchingProvider<DelegatingLlmProvider>(singletonCImpl, 1));
-      this.whatsAppToolProvider = DoubleCheck.provider(new SwitchingProvider<WhatsAppTool>(singletonCImpl, 11));
-      this.calendarToolProvider = DoubleCheck.provider(new SwitchingProvider<CalendarTool>(singletonCImpl, 12));
-      this.alarmToolProvider = DoubleCheck.provider(new SwitchingProvider<AlarmTool>(singletonCImpl, 13));
-      this.openAppToolProvider = DoubleCheck.provider(new SwitchingProvider<OpenAppTool>(singletonCImpl, 14));
-      this.provideDatabaseProvider = DoubleCheck.provider(new SwitchingProvider<AppDatabase>(singletonCImpl, 17));
-      this.memoryRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<MemoryRepository>(singletonCImpl, 16));
-      this.memoryToolProvider = DoubleCheck.provider(new SwitchingProvider<MemoryTool>(singletonCImpl, 15));
-      this.screenToolProvider = DoubleCheck.provider(new SwitchingProvider<ScreenTool>(singletonCImpl, 18));
-      this.fileManagerToolProvider = DoubleCheck.provider(new SwitchingProvider<FileManagerTool>(singletonCImpl, 19));
-      this.smsToolProvider = DoubleCheck.provider(new SwitchingProvider<SmsTool>(singletonCImpl, 20));
-      this.clipboardToolProvider = DoubleCheck.provider(new SwitchingProvider<ClipboardTool>(singletonCImpl, 21));
-      this.toolRegistryProvider = DoubleCheck.provider(new SwitchingProvider<ToolRegistry>(singletonCImpl, 10));
-      this.agentUseCaseProvider = DoubleCheck.provider(new SwitchingProvider<AgentUseCase>(singletonCImpl, 0));
+      this.voiceInputManagerProvider = DoubleCheck.provider(new SwitchingProvider<VoiceInputManager>(singletonCImpl, 0));
+      this.settingsRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<SettingsRepository>(singletonCImpl, 1));
+      this.provideOkHttpClientProvider = DoubleCheck.provider(new SwitchingProvider<OkHttpClient>(singletonCImpl, 6));
+      this.provideGsonProvider = DoubleCheck.provider(new SwitchingProvider<Gson>(singletonCImpl, 7));
+      this.provideAnthropicApiServiceProvider = DoubleCheck.provider(new SwitchingProvider<AnthropicApiService>(singletonCImpl, 5));
+      this.anthropicLlmProvider = DoubleCheck.provider(new SwitchingProvider<AnthropicLlmProvider>(singletonCImpl, 4));
+      this.provideAzureOpenAiApiServiceProvider = DoubleCheck.provider(new SwitchingProvider<AzureOpenAiApiService>(singletonCImpl, 9));
+      this.azureOpenAiLlmProvider = DoubleCheck.provider(new SwitchingProvider<AzureOpenAiLlmProvider>(singletonCImpl, 8));
+      this.localLlmProvider = DoubleCheck.provider(new SwitchingProvider<LocalLlmProvider>(singletonCImpl, 10));
+      this.delegatingLlmProvider = DoubleCheck.provider(new SwitchingProvider<DelegatingLlmProvider>(singletonCImpl, 3));
+      this.whatsAppToolProvider = DoubleCheck.provider(new SwitchingProvider<WhatsAppTool>(singletonCImpl, 12));
+      this.calendarToolProvider = DoubleCheck.provider(new SwitchingProvider<CalendarTool>(singletonCImpl, 13));
+      this.alarmToolProvider = DoubleCheck.provider(new SwitchingProvider<AlarmTool>(singletonCImpl, 14));
+      this.openAppToolProvider = DoubleCheck.provider(new SwitchingProvider<OpenAppTool>(singletonCImpl, 15));
+      this.provideDatabaseProvider = DoubleCheck.provider(new SwitchingProvider<AppDatabase>(singletonCImpl, 18));
+      this.memoryRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<MemoryRepository>(singletonCImpl, 17));
+      this.memoryToolProvider = DoubleCheck.provider(new SwitchingProvider<MemoryTool>(singletonCImpl, 16));
+      this.screenToolProvider = DoubleCheck.provider(new SwitchingProvider<ScreenTool>(singletonCImpl, 19));
+      this.fileManagerToolProvider = DoubleCheck.provider(new SwitchingProvider<FileManagerTool>(singletonCImpl, 20));
+      this.smsToolProvider = DoubleCheck.provider(new SwitchingProvider<SmsTool>(singletonCImpl, 21));
+      this.clipboardToolProvider = DoubleCheck.provider(new SwitchingProvider<ClipboardTool>(singletonCImpl, 22));
+      this.toolRegistryProvider = DoubleCheck.provider(new SwitchingProvider<ToolRegistry>(singletonCImpl, 11));
+      this.agentUseCaseProvider = DoubleCheck.provider(new SwitchingProvider<AgentUseCase>(singletonCImpl, 2));
     }
 
     @Override
@@ -714,70 +767,73 @@ public final class DaggerOpenPawApplication_HiltComponents_SingletonC {
       @Override
       public T get() {
         switch (id) {
-          case 0: // com.openpaw.app.domain.usecase.AgentUseCase 
-          return (T) new AgentUseCase(singletonCImpl.delegatingLlmProvider.get(), singletonCImpl.toolRegistryProvider.get(), singletonCImpl.messageDao(), singletonCImpl.memoryRepositoryProvider.get());
+          case 0: // com.openpaw.app.presentation.voice.VoiceInputManager 
+          return (T) new VoiceInputManager(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
-          case 1: // com.openpaw.app.data.remote.DelegatingLlmProvider 
-          return (T) new DelegatingLlmProvider(singletonCImpl.anthropicLlmProvider.get(), singletonCImpl.azureOpenAiLlmProvider.get(), singletonCImpl.localLlmProvider.get(), singletonCImpl.settingsRepositoryProvider.get());
-
-          case 2: // com.openpaw.app.data.remote.AnthropicLlmProvider 
-          return (T) new AnthropicLlmProvider(singletonCImpl.provideAnthropicApiServiceProvider.get(), singletonCImpl.settingsRepositoryProvider.get());
-
-          case 3: // com.openpaw.app.data.remote.AnthropicApiService 
-          return (T) AppModule_ProvideAnthropicApiServiceFactory.provideAnthropicApiService(singletonCImpl.provideOkHttpClientProvider.get(), singletonCImpl.provideGsonProvider.get());
-
-          case 4: // okhttp3.OkHttpClient 
-          return (T) AppModule_ProvideOkHttpClientFactory.provideOkHttpClient();
-
-          case 5: // com.google.gson.Gson 
-          return (T) AppModule_ProvideGsonFactory.provideGson();
-
-          case 6: // com.openpaw.app.data.repository.SettingsRepository 
+          case 1: // com.openpaw.app.data.repository.SettingsRepository 
           return (T) new SettingsRepository(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
-          case 7: // com.openpaw.app.data.remote.AzureOpenAiLlmProvider 
+          case 2: // com.openpaw.app.domain.usecase.AgentUseCase 
+          return (T) new AgentUseCase(singletonCImpl.delegatingLlmProvider.get(), singletonCImpl.toolRegistryProvider.get(), singletonCImpl.messageDao(), singletonCImpl.memoryRepositoryProvider.get(), singletonCImpl.settingsRepositoryProvider.get());
+
+          case 3: // com.openpaw.app.data.remote.DelegatingLlmProvider 
+          return (T) new DelegatingLlmProvider(singletonCImpl.anthropicLlmProvider.get(), singletonCImpl.azureOpenAiLlmProvider.get(), singletonCImpl.localLlmProvider.get(), singletonCImpl.settingsRepositoryProvider.get());
+
+          case 4: // com.openpaw.app.data.remote.AnthropicLlmProvider 
+          return (T) new AnthropicLlmProvider(singletonCImpl.provideAnthropicApiServiceProvider.get(), singletonCImpl.settingsRepositoryProvider.get());
+
+          case 5: // com.openpaw.app.data.remote.AnthropicApiService 
+          return (T) AppModule_ProvideAnthropicApiServiceFactory.provideAnthropicApiService(singletonCImpl.provideOkHttpClientProvider.get(), singletonCImpl.provideGsonProvider.get());
+
+          case 6: // okhttp3.OkHttpClient 
+          return (T) AppModule_ProvideOkHttpClientFactory.provideOkHttpClient();
+
+          case 7: // com.google.gson.Gson 
+          return (T) AppModule_ProvideGsonFactory.provideGson();
+
+          case 8: // com.openpaw.app.data.remote.AzureOpenAiLlmProvider 
           return (T) new AzureOpenAiLlmProvider(singletonCImpl.provideAzureOpenAiApiServiceProvider.get(), singletonCImpl.settingsRepositoryProvider.get(), singletonCImpl.provideGsonProvider.get());
 
-          case 8: // com.openpaw.app.data.remote.AzureOpenAiApiService 
+          case 9: // com.openpaw.app.data.remote.AzureOpenAiApiService 
           return (T) AppModule_ProvideAzureOpenAiApiServiceFactory.provideAzureOpenAiApiService(singletonCImpl.provideOkHttpClientProvider.get(), singletonCImpl.provideGsonProvider.get());
 
-          case 9: // com.openpaw.app.data.remote.LocalLlmProvider 
+          case 10: // com.openpaw.app.data.remote.LocalLlmProvider 
           return (T) new LocalLlmProvider();
 
-          case 10: // com.openpaw.app.domain.tools.ToolRegistry 
+          case 11: // com.openpaw.app.domain.tools.ToolRegistry 
           return (T) new ToolRegistry(singletonCImpl.whatsAppToolProvider.get(), singletonCImpl.calendarToolProvider.get(), singletonCImpl.alarmToolProvider.get(), singletonCImpl.openAppToolProvider.get(), singletonCImpl.memoryToolProvider.get(), singletonCImpl.screenToolProvider.get(), singletonCImpl.fileManagerToolProvider.get(), singletonCImpl.smsToolProvider.get(), singletonCImpl.clipboardToolProvider.get());
 
-          case 11: // com.openpaw.app.domain.tools.WhatsAppTool 
+          case 12: // com.openpaw.app.domain.tools.WhatsAppTool 
           return (T) new WhatsAppTool(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
-          case 12: // com.openpaw.app.domain.tools.CalendarTool 
+          case 13: // com.openpaw.app.domain.tools.CalendarTool 
           return (T) new CalendarTool(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
-          case 13: // com.openpaw.app.domain.tools.AlarmTool 
+          case 14: // com.openpaw.app.domain.tools.AlarmTool 
           return (T) new AlarmTool(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
-          case 14: // com.openpaw.app.domain.tools.OpenAppTool 
+          case 15: // com.openpaw.app.domain.tools.OpenAppTool 
           return (T) new OpenAppTool(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
-          case 15: // com.openpaw.app.domain.tools.MemoryTool 
+          case 16: // com.openpaw.app.domain.tools.MemoryTool 
           return (T) new MemoryTool(singletonCImpl.memoryRepositoryProvider.get());
 
-          case 16: // com.openpaw.app.data.repository.MemoryRepository 
+          case 17: // com.openpaw.app.data.repository.MemoryRepository 
           return (T) new MemoryRepository(singletonCImpl.memoryDao());
 
-          case 17: // com.openpaw.app.data.local.AppDatabase 
+          case 18: // com.openpaw.app.data.local.AppDatabase 
           return (T) AppModule_ProvideDatabaseFactory.provideDatabase(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
-          case 18: // com.openpaw.app.domain.tools.ScreenTool 
+          case 19: // com.openpaw.app.domain.tools.ScreenTool 
           return (T) new ScreenTool();
 
-          case 19: // com.openpaw.app.domain.tools.FileManagerTool 
+          case 20: // com.openpaw.app.domain.tools.FileManagerTool 
           return (T) new FileManagerTool(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
-          case 20: // com.openpaw.app.domain.tools.SmsTool 
+          case 21: // com.openpaw.app.domain.tools.SmsTool 
           return (T) new SmsTool(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
-          case 21: // com.openpaw.app.domain.tools.ClipboardTool 
+          case 22: // com.openpaw.app.domain.tools.ClipboardTool 
           return (T) new ClipboardTool(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
           default: throw new AssertionError(id);

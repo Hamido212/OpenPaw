@@ -1,6 +1,7 @@
 package com.openpaw.app.domain.tools
 
 import com.openpaw.app.service.OpenPawAccessibilityService
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -49,7 +50,8 @@ class ScreenTool @Inject constructor() : Tool {
         return when (val action = input["action"] as? String) {
 
             "read" -> {
-                val screen = service.readScreen()
+                // Truncate to keep token count small – 2500 chars is enough for the LLM
+                val screen = service.readScreen().take(2500)
                 ToolResult(true, "Current screen:\n$screen")
             }
 
@@ -100,10 +102,12 @@ class ScreenTool @Inject constructor() : Tool {
 
             "back" -> {
                 service.pressBack()
+                delay(500) // wait for screen transition to complete
                 ToolResult(true, "Pressed Back")
             }
             "home" -> {
                 service.pressHome()
+                delay(700) // wait for homescreen to fully load
                 ToolResult(true, "Pressed Home")
             }
             "recents" -> {

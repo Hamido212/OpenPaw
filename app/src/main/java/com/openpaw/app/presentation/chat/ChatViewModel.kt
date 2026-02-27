@@ -30,11 +30,16 @@ class ChatViewModel @Inject constructor(
     private val agentUseCase: AgentUseCase,
     private val messageDao: MessageDao,
     private val settingsRepository: SettingsRepository,
-    val voiceInputManager: VoiceInputManager          // ← public so ChatScreen can observe
+    val voiceInputManager: VoiceInputManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ChatUiState())
     val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
+
+    /** First user message per session – used for the history bottom sheet. */
+    val sessionPreviews: StateFlow<List<Message>> = messageDao
+        .getSessionPreviews()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     init {
         // Observe messages from DB for current session
@@ -46,7 +51,6 @@ class ChatViewModel @Inject constructor(
                     }
             }
         }
-        // Observe accessibility + foreground service state
         viewModelScope.launch {
             OpenPawAccessibilityService.instance.collect { service ->
                 _uiState.update { it.copy(isAccessibilityEnabled = service != null) }
@@ -57,13 +61,9 @@ class ChatViewModel @Inject constructor(
                 _uiState.update { it.copy(isAgentServiceRunning = running) }
             }
         }
-        // Auto-start voice input when triggered from FloatingBubble / QsTile
         viewModelScope.launch {
             voiceInputManager.voiceTrigger.collect { triggeredAt ->
-                // Only act on fresh triggers (within last 5 s) to avoid replaying on re-subscribe
-                if (System.currentTimeMillis() - triggeredAt < 5_000L) {
-                    startVoiceInput()
-                }
+                if (System.currentTimeMillis() - triggeredAt < 5_000L) startVoiceInput()
             }
         }
     }
@@ -77,73 +77,64 @@ class ChatViewModel @Inject constructor(
         _uiState.update { it.copy(isLoading = true, error = null, currentToolStatus = null) }
 
         viewModelScope.launch {
-            // Provider-aware key check: only block if Anthropic selected AND no key entered.
-            // Azure / Local providers validate their own credentials internally.
             val selectedProvider = settingsRepository.selectedProvider.first()
             val anthropicKey = settingsRepository.apiKey.first()
             if (selectedProvider == com.openpaw.app.data.remote.LlmProviderType.ANTHROPIC.id
                 && anthropicKey.isBlank()
             ) {
                 _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        error = "Kein Anthropic API-Key gesetzt. Bitte in Einstellungen eintragen."
-                    )
+                    it.copy(isLoading = false, error = "Kein Anthropic API-Key. Bitte in Einstellungen eintragen.")
                 }
                 return@launch
             }
 
-            agentUseCase.processMessage(userInput, sessionId)
-                .collect { event ->
-                    when (event) {
-                        is AgentEvent.Thinking -> {
-                            _uiState.update { it.copy(currentToolStatus = "Thinking...") }
-                        }
-                        is AgentEvent.ToolCall -> {
-                            _uiState.update { it.copy(currentToolStatus = "Using tool: ${event.toolName}...") }
-                        }
-                        is AgentEvent.ToolResult -> {
-                            val status = if (event.success) "✓ ${event.toolName}" else "✗ ${event.toolName}: ${event.output}"
-                            _uiState.update { it.copy(currentToolStatus = status) }
-                        }
-                        is AgentEvent.FinalResponse -> {
-                            _uiState.update { it.copy(isLoading = false, currentToolStatus = null) }
-                            // Speak the response if TTS is enabled
-                            voiceInputManager.speak(event.text)
-                        }
-                        is AgentEvent.Error -> {
-                            _uiState.update {
-                                it.copy(isLoading = false, currentToolStatus = null, error = event.message)
-                            }
+            agentUseCase.processMessage(userInput, sessionId).collect { event ->
+                when (event) {
+                    is AgentEvent.Thinking    -> _uiState.update { it.copy(currentToolStatus = "Denke…") }
+                    is AgentEvent.ToolCall    -> _uiState.update { it.copy(currentToolStatus = "⚙️ ${event.toolName}…") }
+                    is AgentEvent.ToolResult  -> {
+                        val s = if (event.success) "✓ ${event.toolName}" else "✗ ${event.toolName}"
+                        _uiState.update { it.copy(currentToolStatus = s) }
+                    }
+                    is AgentEvent.FinalResponse -> {
+                        _uiState.update { it.copy(isLoading = false, currentToolStatus = null) }
+                        voiceInputManager.speak(event.text)
+                    }
+                    is AgentEvent.Error -> {
+                        _uiState.update {
+                            it.copy(isLoading = false, currentToolStatus = null, error = event.message)
                         }
                     }
                 }
+            }
         }
     }
 
     // ── Voice input ───────────────────────────────────────────────────────────
 
-    /** Starts STT – must be called while RECORD_AUDIO permission is granted. */
-    fun startVoiceInput() {
-        voiceInputManager.startListening { spokenText ->
-            sendMessage(spokenText)
-        }
-    }
+    fun startVoiceInput() = voiceInputManager.startListening { sendMessage(it) }
+    fun stopVoiceInput()  = voiceInputManager.stopListening()
+    fun toggleTts()       = voiceInputManager.setTtsEnabled(!voiceInputManager.ttsEnabled.value)
 
-    fun stopVoiceInput() {
-        voiceInputManager.stopListening()
-    }
-
-    fun toggleTts() {
-        voiceInputManager.setTtsEnabled(!voiceInputManager.ttsEnabled.value)
-    }
-
-    // ── Session ───────────────────────────────────────────────────────────────
+    // ── Session management ────────────────────────────────────────────────────
 
     fun startNewSession() {
-        _uiState.update {
-            ChatUiState(sessionId = UUID.randomUUID().toString())
+        _uiState.update { ChatUiState(sessionId = UUID.randomUUID().toString()) }
+    }
+
+    fun loadSession(sessionId: String) {
+        _uiState.update { ChatUiState(sessionId = sessionId) }
+    }
+
+    fun deleteSession(sessionId: String) {
+        viewModelScope.launch {
+            messageDao.deleteSession(sessionId)
+            if (_uiState.value.sessionId == sessionId) startNewSession()
         }
+    }
+
+    fun clearCurrentSession() {
+        viewModelScope.launch { messageDao.clearSession(_uiState.value.sessionId) }
     }
 
     fun clearError() {

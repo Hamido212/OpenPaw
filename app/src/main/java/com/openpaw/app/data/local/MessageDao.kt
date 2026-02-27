@@ -24,4 +24,23 @@ interface MessageDao {
 
     @Query("SELECT * FROM messages ORDER BY timestamp DESC LIMIT :limit")
     suspend fun getRecentMessages(limit: Int): List<Message>
+
+    /**
+     * Returns the first USER message for each session, ordered newest session first.
+     * Used to show session previews in the chat history list.
+     */
+    @Query("""
+        SELECT m.* FROM messages m
+        INNER JOIN (
+            SELECT sessionId, MIN(id) AS minId
+            FROM messages
+            WHERE role = 'USER'
+            GROUP BY sessionId
+        ) t ON m.id = t.minId
+        ORDER BY m.timestamp DESC
+    """)
+    fun getSessionPreviews(): Flow<List<Message>>
+
+    @Query("DELETE FROM messages WHERE sessionId = :sessionId")
+    suspend fun deleteSession(sessionId: String)
 }

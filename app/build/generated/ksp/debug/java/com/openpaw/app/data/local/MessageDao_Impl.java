@@ -119,6 +119,32 @@ public final class MessageDao_Impl implements MessageDao {
   }
 
   @Override
+  public Object deleteSession(final String sessionId,
+      final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfClearSession.acquire();
+        int _argIndex = 1;
+        _stmt.bindString(_argIndex, sessionId);
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfClearSession.release(_stmt);
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
   public Flow<List<Message>> getMessagesForSession(final String sessionId) {
     final String _sql = "SELECT * FROM messages WHERE sessionId = ? ORDER BY timestamp ASC";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
@@ -306,6 +332,68 @@ public final class MessageDao_Impl implements MessageDao {
         }
       }
     }, $completion);
+  }
+
+  @Override
+  public Flow<List<Message>> getSessionPreviews() {
+    final String _sql = "\n"
+            + "        SELECT m.* FROM messages m\n"
+            + "        INNER JOIN (\n"
+            + "            SELECT sessionId, MIN(id) AS minId\n"
+            + "            FROM messages\n"
+            + "            WHERE role = 'USER'\n"
+            + "            GROUP BY sessionId\n"
+            + "        ) t ON m.id = t.minId\n"
+            + "        ORDER BY m.timestamp DESC\n"
+            + "    ";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
+    return CoroutinesRoom.createFlow(__db, false, new String[] {"messages"}, new Callable<List<Message>>() {
+      @Override
+      @NonNull
+      public List<Message> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfId = CursorUtil.getColumnIndexOrThrow(_cursor, "id");
+          final int _cursorIndexOfSessionId = CursorUtil.getColumnIndexOrThrow(_cursor, "sessionId");
+          final int _cursorIndexOfRole = CursorUtil.getColumnIndexOrThrow(_cursor, "role");
+          final int _cursorIndexOfContent = CursorUtil.getColumnIndexOrThrow(_cursor, "content");
+          final int _cursorIndexOfToolName = CursorUtil.getColumnIndexOrThrow(_cursor, "toolName");
+          final int _cursorIndexOfTimestamp = CursorUtil.getColumnIndexOrThrow(_cursor, "timestamp");
+          final List<Message> _result = new ArrayList<Message>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final Message _item;
+            final long _tmpId;
+            _tmpId = _cursor.getLong(_cursorIndexOfId);
+            final String _tmpSessionId;
+            _tmpSessionId = _cursor.getString(_cursorIndexOfSessionId);
+            final MessageRole _tmpRole;
+            final String _tmp;
+            _tmp = _cursor.getString(_cursorIndexOfRole);
+            _tmpRole = __converters.toRole(_tmp);
+            final String _tmpContent;
+            _tmpContent = _cursor.getString(_cursorIndexOfContent);
+            final String _tmpToolName;
+            if (_cursor.isNull(_cursorIndexOfToolName)) {
+              _tmpToolName = null;
+            } else {
+              _tmpToolName = _cursor.getString(_cursorIndexOfToolName);
+            }
+            final long _tmpTimestamp;
+            _tmpTimestamp = _cursor.getLong(_cursorIndexOfTimestamp);
+            _item = new Message(_tmpId,_tmpSessionId,_tmpRole,_tmpContent,_tmpToolName,_tmpTimestamp);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+        }
+      }
+
+      @Override
+      protected void finalize() {
+        _statement.release();
+      }
+    });
   }
 
   @NonNull

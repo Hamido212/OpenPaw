@@ -3,6 +3,7 @@ package com.openpaw.app;
 import com.openpaw.app.di.AppModule;
 import com.openpaw.app.di.LlmModule;
 import com.openpaw.app.presentation.chat.ChatViewModel_HiltModules;
+import com.openpaw.app.presentation.onboarding.OnboardingViewModel_HiltModules;
 import com.openpaw.app.presentation.settings.SettingsViewModel_HiltModules;
 import com.openpaw.app.presentation.tile.OpenPawQsTile_GeneratedInjector;
 import com.openpaw.app.service.AgentForegroundService_GeneratedInjector;
@@ -165,6 +166,7 @@ public final class OpenPawApplication_HiltComponents {
           ChatViewModel_HiltModules.KeyModule.class,
           HiltWrapper_ActivityRetainedComponentManager_LifecycleModule.class,
           HiltWrapper_SavedStateHandleModule.class,
+          OnboardingViewModel_HiltModules.KeyModule.class,
           ActivityCBuilderModule.class,
           ViewModelCBuilderModule.class,
           SettingsViewModel_HiltModules.KeyModule.class
@@ -205,6 +207,7 @@ public final class OpenPawApplication_HiltComponents {
       modules = {
           ChatViewModel_HiltModules.BindsModule.class,
           HiltWrapper_HiltViewModelFactory_ViewModelModule.class,
+          OnboardingViewModel_HiltModules.BindsModule.class,
           SettingsViewModel_HiltModules.BindsModule.class
       }
   )

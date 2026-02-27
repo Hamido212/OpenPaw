@@ -3,6 +3,7 @@ package com.openpaw.app.data.repository
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -31,6 +32,19 @@ class SettingsRepository @Inject constructor(
     private val KEY_AZURE_DEPLOYMENT     = stringPreferencesKey("azure_deployment_name")
     private val KEY_AZURE_API_KEY        = stringPreferencesKey("azure_api_key")
 
+    // ── Onboarding ────────────────────────────────────────────────────────────
+    private val KEY_ONBOARDING_DONE      = booleanPreferencesKey("onboarding_done")
+
+    // ── User profile ──────────────────────────────────────────────────────────
+    private val KEY_USER_NAME            = stringPreferencesKey("user_name")
+    private val KEY_USER_BIO             = stringPreferencesKey("user_bio")
+
+    // ── Agent personality ─────────────────────────────────────────────────────
+    private val KEY_AGENT_NAME           = stringPreferencesKey("agent_name")
+    private val KEY_AGENT_EMOJI          = stringPreferencesKey("agent_emoji")
+    /** One of: "freundlich" | "professionell" | "witzig" | "direkt" */
+    private val KEY_AGENT_PERSONALITY    = stringPreferencesKey("agent_personality")
+
     // ─── Flows ───────────────────────────────────────────────────────────────
 
     /** Which LLM provider is active: "anthropic" | "azure" | "local" */
@@ -57,6 +71,30 @@ class SettingsRepository @Inject constructor(
         prefs[KEY_AZURE_API_KEY] ?: ""
     }
 
+    // Onboarding
+    val isOnboardingDone: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[KEY_ONBOARDING_DONE] ?: false
+    }
+
+    // User profile
+    val userName: Flow<String> = context.dataStore.data.map { prefs ->
+        prefs[KEY_USER_NAME] ?: ""
+    }
+    val userBio: Flow<String> = context.dataStore.data.map { prefs ->
+        prefs[KEY_USER_BIO] ?: ""
+    }
+
+    // Agent personality
+    val agentName: Flow<String> = context.dataStore.data.map { prefs ->
+        prefs[KEY_AGENT_NAME] ?: "OpenPaw"
+    }
+    val agentEmoji: Flow<String> = context.dataStore.data.map { prefs ->
+        prefs[KEY_AGENT_EMOJI] ?: "🐾"
+    }
+    val agentPersonality: Flow<String> = context.dataStore.data.map { prefs ->
+        prefs[KEY_AGENT_PERSONALITY] ?: "freundlich"
+    }
+
     // ─── Setters ─────────────────────────────────────────────────────────────
 
     suspend fun setSelectedProvider(provider: String) {
@@ -80,5 +118,29 @@ class SettingsRepository @Inject constructor(
     }
     suspend fun setAzureApiKey(key: String) {
         context.dataStore.edit { it[KEY_AZURE_API_KEY] = key }
+    }
+
+    // Onboarding
+    suspend fun setOnboardingDone(done: Boolean) {
+        context.dataStore.edit { it[KEY_ONBOARDING_DONE] = done }
+    }
+
+    // User profile
+    suspend fun setUserName(name: String) {
+        context.dataStore.edit { it[KEY_USER_NAME] = name }
+    }
+    suspend fun setUserBio(bio: String) {
+        context.dataStore.edit { it[KEY_USER_BIO] = bio }
+    }
+
+    // Agent personality
+    suspend fun setAgentName(name: String) {
+        context.dataStore.edit { it[KEY_AGENT_NAME] = name }
+    }
+    suspend fun setAgentEmoji(emoji: String) {
+        context.dataStore.edit { it[KEY_AGENT_EMOJI] = emoji }
+    }
+    suspend fun setAgentPersonality(personality: String) {
+        context.dataStore.edit { it[KEY_AGENT_PERSONALITY] = personality }
     }
 }

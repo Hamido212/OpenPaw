@@ -1,11 +1,11 @@
 [
     {
-        "merged": "C:\\Users\\hamid\\.gradle\\daemon\\8.7\\com.openpaw.app-debug-64:\\mipmap-hdpi_ic_launcher.png.flat",
-        "source": "C:\\Users\\hamid\\.gradle\\daemon\\8.7\\com.openpaw.app-main-66:\\mipmap-hdpi\\ic_launcher.png"
+        "merged": "com.openpaw.app-debug-64:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.openpaw.app-main-66:/drawable/ic_launcher_foreground.xml"
     },
     {
-        "merged": "com.openpaw.app-debug-64:/xml_accessibility_service_config.xml.flat",
-        "source": "com.openpaw.app-main-66:/xml/accessibility_service_config.xml"
+        "merged": "C:\\Users\\hamid\\.gradle\\daemon\\8.7\\com.openpaw.app-debug-64:\\mipmap-hdpi_ic_launcher.png.flat",
+        "source": "C:\\Users\\hamid\\.gradle\\daemon\\8.7\\com.openpaw.app-main-66:\\mipmap-hdpi\\ic_launcher.png"
     },
     {
         "merged": "C:\\Users\\hamid\\.gradle\\daemon\\8.7\\com.openpaw.app-debug-64:\\mipmap-mdpi_ic_launcher_round.png.flat",
@@ -24,6 +24,10 @@
         "source": "C:\\Users\\hamid\\.gradle\\daemon\\8.7\\com.openpaw.app-main-66:\\xml\\accessibility_service_config.xml"
     },
     {
+        "merged": "com.openpaw.app-debug-64:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.openpaw.app-main-66:/drawable/ic_launcher_background.xml"
+    },
+    {
         "merged": "C:\\Users\\hamid\\.gradle\\daemon\\8.7\\com.openpaw.app-debug-64:\\mipmap-xxhdpi_ic_launcher.png.flat",
         "source": "C:\\Users\\hamid\\.gradle\\daemon\\8.7\\com.openpaw.app-main-66:\\mipmap-xxhdpi\\ic_launcher.png"
     },
@@ -40,11 +44,19 @@
         "source": "C:\\Users\\hamid\\.gradle\\daemon\\8.7\\com.openpaw.app-main-66:\\mipmap-xxxhdpi\\ic_launcher_round.png"
     },
     {
+        "merged": "com.openpaw.app-debug-64:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.openpaw.app-main-66:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
         "merged": "C:\\Users\\hamid\\.gradle\\daemon\\8.7\\com.openpaw.app-debug-64:\\mipmap-xhdpi_ic_launcher.png.flat",
         "source": "C:\\Users\\hamid\\.gradle\\daemon\\8.7\\com.openpaw.app-main-66:\\mipmap-xhdpi\\ic_launcher.png"
     },
     {
         "merged": "C:\\Users\\hamid\\.gradle\\daemon\\8.7\\com.openpaw.app-debug-64:\\mipmap-hdpi_ic_launcher_round.png.flat",
         "source": "C:\\Users\\hamid\\.gradle\\daemon\\8.7\\com.openpaw.app-main-66:\\mipmap-hdpi\\ic_launcher_round.png"
+    },
+    {
+        "merged": "com.openpaw.app-debug-64:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.openpaw.app-main-66:/mipmap-anydpi-v26/ic_launcher.xml"
     }
 ]

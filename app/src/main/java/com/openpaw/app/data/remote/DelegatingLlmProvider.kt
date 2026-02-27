@@ -28,17 +28,23 @@ class DelegatingLlmProvider @Inject constructor(
 
     override val name: String get() = "DelegatingLlmProvider"
 
+    private suspend fun activeProvider(): LlmProvider =
+        when (settingsRepository.selectedProvider.first()) {
+            LlmProviderType.AZURE.id -> azureProvider
+            LlmProviderType.LOCAL.id -> localProvider
+            else -> anthropicProvider   // default: Anthropic
+        }
+
     override suspend fun complete(
         messages: List<ApiMessage>,
         systemPrompt: String,
         tools: List<ApiTool>
-    ): LlmResponse {
-        return when (settingsRepository.selectedProvider.first()) {
-            LlmProviderType.AZURE.id -> azureProvider.complete(messages, systemPrompt, tools)
-            LlmProviderType.LOCAL.id -> localProvider.complete(messages, systemPrompt, tools)
-            else -> anthropicProvider.complete(messages, systemPrompt, tools)  // default: Anthropic
-        }
-    }
+    ): LlmResponse = activeProvider().complete(messages, systemPrompt, tools)
+
+    override suspend fun buildContinuationMessages(
+        response: LlmResponse,
+        toolResults: List<ToolResultEntry>
+    ): List<ApiMessage> = activeProvider().buildContinuationMessages(response, toolResults)
 }
 
 /** Canonical provider IDs used throughout the app. */

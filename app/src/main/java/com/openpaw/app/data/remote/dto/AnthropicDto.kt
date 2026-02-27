@@ -13,8 +13,15 @@ data class AnthropicRequest(
 )
 
 data class ApiMessage(
-    val role: String,   // "user" | "assistant"
-    val content: Any    // String or List<ContentBlock>
+    val role: String,   // "user" | "assistant" | "tool"
+    val content: Any,   // String or List<Map<String,Any>> (structured Anthropic content blocks)
+    // ── Azure-only continuation fields ──────────────────────────────────────
+    // These are null for Anthropic messages (Anthropic API ignores unknown fields).
+    /** Set on role="tool" messages (Azure) – references the corresponding tool_call id. */
+    val toolCallId: String? = null,
+    /** Set on role="assistant" when the LLM returned tool calls (Azure).
+     *  Carries the raw AzureToolCall list so it can be re-serialized correctly. */
+    val azureToolCalls: List<Any>? = null
 )
 
 data class ApiTool(

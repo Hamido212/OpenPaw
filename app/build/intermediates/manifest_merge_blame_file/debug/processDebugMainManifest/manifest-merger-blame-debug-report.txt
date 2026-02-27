@@ -37,241 +37,245 @@
 23    <uses-permission android:name="android.permission.SET_ALARM" />
 23-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:17:5-68
 23-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:17:22-65
-24    <uses-permission android:name="android.permission.VIBRATE" />
-24-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:18:5-66
-24-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:18:22-63
-25
-26    <!-- ── Voice Input (Mic) ─────────────────────────────────────────────── -->
-27    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-27-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:21:5-71
-27-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:21:22-68
-28
-29    <!-- ── Floating Bubble overlay (user grants: "Draw over other apps") ─── -->
-30    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-30-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:24:5-78
-30-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:24:22-75
-31
-32    <!-- ── Services / notifications ──────────────────────────────────────── -->
-33    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-33-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:27:5-77
-33-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:27:22-74
-34    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
-34-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:28:5-87
-34-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:28:22-84
-35    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+24    <!-- Required by some ROMs (Samsung, MIUI, etc.) that define a custom alarm permission -->
+25    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+25-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:19:5-78
+25-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:19:22-75
+26    <uses-permission android:name="android.permission.VIBRATE" />
+26-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:20:5-66
+26-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:20:22-63
+27
+28    <!-- ── Voice Input (Mic) ─────────────────────────────────────────────── -->
+29    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+29-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:23:5-71
+29-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:23:22-68
+30
+31    <!-- ── Floating Bubble overlay (user grants: "Draw over other apps") ─── -->
+32    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+32-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:26:5-78
+32-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:26:22-75
+33
+34    <!-- ── Services / notifications ──────────────────────────────────────── -->
+35    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 35-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:29:5-77
 35-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:29:22-74
-36    <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" />
-36-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:30:5-31:47
-36-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:30:22-82
-37
-38    <permission
-38-->[androidx.core:core:1.13.1] C:\Users\hamid\.gradle\caches\transforms-4\937dd136ab660679361ca236724a3b8a\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
-39        android:name="com.openpaw.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
-39-->[androidx.core:core:1.13.1] C:\Users\hamid\.gradle\caches\transforms-4\937dd136ab660679361ca236724a3b8a\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
-40        android:protectionLevel="signature" />
-40-->[androidx.core:core:1.13.1] C:\Users\hamid\.gradle\caches\transforms-4\937dd136ab660679361ca236724a3b8a\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
-41
-42    <uses-permission android:name="com.openpaw.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
-42-->[androidx.core:core:1.13.1] C:\Users\hamid\.gradle\caches\transforms-4\937dd136ab660679361ca236724a3b8a\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
-42-->[androidx.core:core:1.13.1] C:\Users\hamid\.gradle\caches\transforms-4\937dd136ab660679361ca236724a3b8a\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
+36    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+36-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:30:5-87
+36-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:30:22-84
+37    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+37-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:31:5-77
+37-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:31:22-74
+38    <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" />
+38-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:32:5-33:47
+38-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:32:22-82
+39
+40    <permission
+40-->[androidx.core:core:1.13.1] C:\Users\hamid\.gradle\caches\transforms-4\937dd136ab660679361ca236724a3b8a\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
+41        android:name="com.openpaw.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+41-->[androidx.core:core:1.13.1] C:\Users\hamid\.gradle\caches\transforms-4\937dd136ab660679361ca236724a3b8a\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
+42        android:protectionLevel="signature" />
+42-->[androidx.core:core:1.13.1] C:\Users\hamid\.gradle\caches\transforms-4\937dd136ab660679361ca236724a3b8a\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
 43
-44    <application
-44-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:33:5-94:19
-45        android:name="com.openpaw.app.OpenPawApplication"
-45-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:34:9-43
-46        android:allowBackup="true"
-46-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:35:9-35
-47        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-47-->[androidx.core:core:1.13.1] C:\Users\hamid\.gradle\caches\transforms-4\937dd136ab660679361ca236724a3b8a\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
-48        android:debuggable="true"
-49        android:extractNativeLibs="false"
-50        android:icon="@mipmap/ic_launcher"
-50-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:36:9-43
-51        android:label="@string/app_name"
-51-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:37:9-41
-52        android:roundIcon="@mipmap/ic_launcher_round"
-52-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:38:9-54
-53        android:supportsRtl="true"
-53-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:39:9-35
-54        android:theme="@style/Theme.OpenPaw"
-54-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:40:9-45
-55        android:usesCleartextTraffic="false" >
-55-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:41:9-45
-56
-57        <!-- ── Main activity ─────────────────────────────────────────────── -->
-58        <activity
-58-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:44:9-54:20
-59            android:name="com.openpaw.app.MainActivity"
-59-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:45:13-41
-60            android:exported="true"
-60-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:46:13-36
-61            android:launchMode="singleTop"
-61-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:47:13-43
-62            android:theme="@style/Theme.OpenPaw"
-62-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:49:13-49
-63            android:windowSoftInputMode="adjustResize" >
-63-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:48:13-55
-64            <intent-filter>
-64-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:50:13-53:29
-65                <action android:name="android.intent.action.MAIN" />
-65-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:51:17-69
-65-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:51:25-66
-66
-67                <category android:name="android.intent.category.LAUNCHER" />
-67-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:52:17-77
-67-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:52:27-74
-68            </intent-filter>
-69        </activity>
-70
-71        <!-- ── Background agent (keeps process alive) ────────────────────── -->
-72        <service
-72-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:57:9-60:56
-73            android:name="com.openpaw.app.service.AgentForegroundService"
-73-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:58:13-59
-74            android:exported="false"
-74-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:59:13-37
-75            android:foregroundServiceType="dataSync" />
-75-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:60:13-53
-76
-77        <!-- ── Floating Bubble overlay ────────────────────────────────────── -->
-78        <service
-78-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:63:9-66:56
-79            android:name="com.openpaw.app.service.FloatingBubbleService"
-79-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:64:13-58
-80            android:exported="false"
-80-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:65:13-37
-81            android:foregroundServiceType="dataSync" />
-81-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:66:13-53
-82
-83        <!-- ── Quick Settings Tile ────────────────────────────────────────── -->
-84        <service
-84-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:69:9-78:19
-85            android:name="com.openpaw.app.presentation.tile.OpenPawQsTile"
-85-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:70:13-60
-86            android:exported="true"
-86-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:71:13-36
-87            android:icon="@mipmap/ic_launcher"
-87-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:72:13-47
-88            android:label="OpenPaw"
+44    <uses-permission android:name="com.openpaw.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+44-->[androidx.core:core:1.13.1] C:\Users\hamid\.gradle\caches\transforms-4\937dd136ab660679361ca236724a3b8a\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
+44-->[androidx.core:core:1.13.1] C:\Users\hamid\.gradle\caches\transforms-4\937dd136ab660679361ca236724a3b8a\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
+45
+46    <application
+46-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:35:5-96:19
+47        android:name="com.openpaw.app.OpenPawApplication"
+47-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:36:9-43
+48        android:allowBackup="true"
+48-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:37:9-35
+49        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+49-->[androidx.core:core:1.13.1] C:\Users\hamid\.gradle\caches\transforms-4\937dd136ab660679361ca236724a3b8a\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
+50        android:debuggable="true"
+51        android:extractNativeLibs="false"
+52        android:icon="@mipmap/ic_launcher"
+52-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:38:9-43
+53        android:label="@string/app_name"
+53-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:39:9-41
+54        android:roundIcon="@mipmap/ic_launcher_round"
+54-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:40:9-54
+55        android:supportsRtl="true"
+55-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:41:9-35
+56        android:theme="@style/Theme.OpenPaw"
+56-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:42:9-45
+57        android:usesCleartextTraffic="false" >
+57-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:43:9-45
+58
+59        <!-- ── Main activity ─────────────────────────────────────────────── -->
+60        <activity
+60-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:46:9-56:20
+61            android:name="com.openpaw.app.MainActivity"
+61-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:47:13-41
+62            android:exported="true"
+62-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:48:13-36
+63            android:launchMode="singleTop"
+63-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:49:13-43
+64            android:theme="@style/Theme.OpenPaw"
+64-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:51:13-49
+65            android:windowSoftInputMode="adjustResize" >
+65-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:50:13-55
+66            <intent-filter>
+66-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:52:13-55:29
+67                <action android:name="android.intent.action.MAIN" />
+67-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:53:17-69
+67-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:53:25-66
+68
+69                <category android:name="android.intent.category.LAUNCHER" />
+69-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:54:17-77
+69-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:54:27-74
+70            </intent-filter>
+71        </activity>
+72
+73        <!-- ── Background agent (keeps process alive) ────────────────────── -->
+74        <service
+74-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:59:9-62:56
+75            android:name="com.openpaw.app.service.AgentForegroundService"
+75-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:60:13-59
+76            android:exported="false"
+76-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:61:13-37
+77            android:foregroundServiceType="dataSync" />
+77-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:62:13-53
+78
+79        <!-- ── Floating Bubble overlay ────────────────────────────────────── -->
+80        <service
+80-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:65:9-68:56
+81            android:name="com.openpaw.app.service.FloatingBubbleService"
+81-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:66:13-58
+82            android:exported="false"
+82-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:67:13-37
+83            android:foregroundServiceType="dataSync" />
+83-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:68:13-53
+84
+85        <!-- ── Quick Settings Tile ────────────────────────────────────────── -->
+86        <service
+86-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:71:9-80:19
+87            android:name="com.openpaw.app.presentation.tile.OpenPawQsTile"
+87-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:72:13-60
+88            android:exported="true"
 88-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:73:13-36
-89            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE" >
-89-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:74:13-77
-90            <intent-filter>
-90-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:75:13-77:29
-91                <action android:name="android.service.quicksettings.action.QS_TILE" />
-91-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:76:17-87
-91-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:76:25-84
-92            </intent-filter>
-93        </service>
-94
-95        <!-- ── Accessibility service ─────────────────────────────────────── -->
-96        <service
-96-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:81:9-92:19
-97            android:name="com.openpaw.app.service.OpenPawAccessibilityService"
-97-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:82:13-64
-98            android:exported="true"
-98-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:83:13-36
-99            android:label="@string/accessibility_service_label"
+89            android:icon="@mipmap/ic_launcher"
+89-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:74:13-47
+90            android:label="OpenPaw"
+90-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:75:13-36
+91            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE" >
+91-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:76:13-77
+92            <intent-filter>
+92-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:77:13-79:29
+93                <action android:name="android.service.quicksettings.action.QS_TILE" />
+93-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:78:17-87
+93-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:78:25-84
+94            </intent-filter>
+95        </service>
+96
+97        <!-- ── Accessibility service ─────────────────────────────────────── -->
+98        <service
+98-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:83:9-94:19
+99            android:name="com.openpaw.app.service.OpenPawAccessibilityService"
 99-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:84:13-64
-100            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" >
-100-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:85:13-79
-101            <intent-filter>
-101-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:86:13-88:29
-102                <action android:name="android.accessibilityservice.AccessibilityService" />
-102-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:87:17-92
-102-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:87:25-89
-103            </intent-filter>
-104
-105            <meta-data
-105-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:89:13-91:72
-106                android:name="android.accessibilityservice"
-106-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:90:17-60
-107                android:resource="@xml/accessibility_service_config" />
-107-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:91:17-69
-108        </service>
-109
-110        <provider
-110-->[androidx.emoji2:emoji2:1.3.0] C:\Users\hamid\.gradle\caches\transforms-4\ada18f2565d865b3283e6214fa2d8177\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
-111            android:name="androidx.startup.InitializationProvider"
-111-->[androidx.emoji2:emoji2:1.3.0] C:\Users\hamid\.gradle\caches\transforms-4\ada18f2565d865b3283e6214fa2d8177\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
-112            android:authorities="com.openpaw.app.androidx-startup"
-112-->[androidx.emoji2:emoji2:1.3.0] C:\Users\hamid\.gradle\caches\transforms-4\ada18f2565d865b3283e6214fa2d8177\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
-113            android:exported="false" >
-113-->[androidx.emoji2:emoji2:1.3.0] C:\Users\hamid\.gradle\caches\transforms-4\ada18f2565d865b3283e6214fa2d8177\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
-114            <meta-data
-114-->[androidx.emoji2:emoji2:1.3.0] C:\Users\hamid\.gradle\caches\transforms-4\ada18f2565d865b3283e6214fa2d8177\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
-115                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-115-->[androidx.emoji2:emoji2:1.3.0] C:\Users\hamid\.gradle\caches\transforms-4\ada18f2565d865b3283e6214fa2d8177\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
-116                android:value="androidx.startup" />
-116-->[androidx.emoji2:emoji2:1.3.0] C:\Users\hamid\.gradle\caches\transforms-4\ada18f2565d865b3283e6214fa2d8177\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
-117            <meta-data
-117-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\hamid\.gradle\caches\transforms-4\149d3b4f23e23cf8601e42fe4aa37c58\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:29:13-31:52
-118                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-118-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\hamid\.gradle\caches\transforms-4\149d3b4f23e23cf8601e42fe4aa37c58\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:30:17-78
-119                android:value="androidx.startup" />
-119-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\hamid\.gradle\caches\transforms-4\149d3b4f23e23cf8601e42fe4aa37c58\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:31:17-49
-120            <meta-data
-120-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
-121                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
-121-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
-122                android:value="androidx.startup" />
-122-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
-123        </provider>
-124
-125        <activity
-125-->[androidx.compose.ui:ui-tooling-android:1.7.5] C:\Users\hamid\.gradle\caches\transforms-4\f5e594f8c2f1c6e9881fa7e6a62fe1d6\transformed\ui-tooling-release\AndroidManifest.xml:23:9-25:39
-126            android:name="androidx.compose.ui.tooling.PreviewActivity"
-126-->[androidx.compose.ui:ui-tooling-android:1.7.5] C:\Users\hamid\.gradle\caches\transforms-4\f5e594f8c2f1c6e9881fa7e6a62fe1d6\transformed\ui-tooling-release\AndroidManifest.xml:24:13-71
-127            android:exported="true" />
-127-->[androidx.compose.ui:ui-tooling-android:1.7.5] C:\Users\hamid\.gradle\caches\transforms-4\f5e594f8c2f1c6e9881fa7e6a62fe1d6\transformed\ui-tooling-release\AndroidManifest.xml:25:13-36
-128
-129        <service
-129-->[androidx.room:room-runtime:2.6.1] C:\Users\hamid\.gradle\caches\transforms-4\c440a4ab0c78e181197f4f244acb5383\transformed\room-runtime-2.6.1\AndroidManifest.xml:24:9-28:63
-130            android:name="androidx.room.MultiInstanceInvalidationService"
-130-->[androidx.room:room-runtime:2.6.1] C:\Users\hamid\.gradle\caches\transforms-4\c440a4ab0c78e181197f4f244acb5383\transformed\room-runtime-2.6.1\AndroidManifest.xml:25:13-74
-131            android:directBootAware="true"
-131-->[androidx.room:room-runtime:2.6.1] C:\Users\hamid\.gradle\caches\transforms-4\c440a4ab0c78e181197f4f244acb5383\transformed\room-runtime-2.6.1\AndroidManifest.xml:26:13-43
-132            android:exported="false" />
-132-->[androidx.room:room-runtime:2.6.1] C:\Users\hamid\.gradle\caches\transforms-4\c440a4ab0c78e181197f4f244acb5383\transformed\room-runtime-2.6.1\AndroidManifest.xml:27:13-37
-133
-134        <receiver
-134-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
-135            android:name="androidx.profileinstaller.ProfileInstallReceiver"
-135-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
-136            android:directBootAware="false"
-136-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
-137            android:enabled="true"
-137-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
-138            android:exported="true"
-138-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
-139            android:permission="android.permission.DUMP" >
-139-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
-140            <intent-filter>
-140-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
-141                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
-141-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
-141-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
-142            </intent-filter>
-143            <intent-filter>
-143-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
-144                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
-144-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
-144-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
-145            </intent-filter>
-146            <intent-filter>
-146-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
-147                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
-147-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
-147-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
-148            </intent-filter>
-149            <intent-filter>
-149-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
-150                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
-150-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
-150-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
-151            </intent-filter>
-152        </receiver>
-153    </application>
-154
-155</manifest>
+100            android:exported="true"
+100-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:85:13-36
+101            android:label="@string/accessibility_service_label"
+101-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:86:13-64
+102            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" >
+102-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:87:13-79
+103            <intent-filter>
+103-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:88:13-90:29
+104                <action android:name="android.accessibilityservice.AccessibilityService" />
+104-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:89:17-92
+104-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:89:25-89
+105            </intent-filter>
+106
+107            <meta-data
+107-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:91:13-93:72
+108                android:name="android.accessibilityservice"
+108-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:92:17-60
+109                android:resource="@xml/accessibility_service_config" />
+109-->C:\Users\hamid\Documents\moltiboyaichat\OpenPaw\app\src\main\AndroidManifest.xml:93:17-69
+110        </service>
+111
+112        <provider
+112-->[androidx.emoji2:emoji2:1.3.0] C:\Users\hamid\.gradle\caches\transforms-4\ada18f2565d865b3283e6214fa2d8177\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+113            android:name="androidx.startup.InitializationProvider"
+113-->[androidx.emoji2:emoji2:1.3.0] C:\Users\hamid\.gradle\caches\transforms-4\ada18f2565d865b3283e6214fa2d8177\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
+114            android:authorities="com.openpaw.app.androidx-startup"
+114-->[androidx.emoji2:emoji2:1.3.0] C:\Users\hamid\.gradle\caches\transforms-4\ada18f2565d865b3283e6214fa2d8177\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
+115            android:exported="false" >
+115-->[androidx.emoji2:emoji2:1.3.0] C:\Users\hamid\.gradle\caches\transforms-4\ada18f2565d865b3283e6214fa2d8177\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
+116            <meta-data
+116-->[androidx.emoji2:emoji2:1.3.0] C:\Users\hamid\.gradle\caches\transforms-4\ada18f2565d865b3283e6214fa2d8177\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+117                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+117-->[androidx.emoji2:emoji2:1.3.0] C:\Users\hamid\.gradle\caches\transforms-4\ada18f2565d865b3283e6214fa2d8177\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
+118                android:value="androidx.startup" />
+118-->[androidx.emoji2:emoji2:1.3.0] C:\Users\hamid\.gradle\caches\transforms-4\ada18f2565d865b3283e6214fa2d8177\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
+119            <meta-data
+119-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\hamid\.gradle\caches\transforms-4\149d3b4f23e23cf8601e42fe4aa37c58\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:29:13-31:52
+120                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+120-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\hamid\.gradle\caches\transforms-4\149d3b4f23e23cf8601e42fe4aa37c58\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:30:17-78
+121                android:value="androidx.startup" />
+121-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\hamid\.gradle\caches\transforms-4\149d3b4f23e23cf8601e42fe4aa37c58\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:31:17-49
+122            <meta-data
+122-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+123                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+123-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+124                android:value="androidx.startup" />
+124-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+125        </provider>
+126
+127        <activity
+127-->[androidx.compose.ui:ui-tooling-android:1.7.5] C:\Users\hamid\.gradle\caches\transforms-4\f5e594f8c2f1c6e9881fa7e6a62fe1d6\transformed\ui-tooling-release\AndroidManifest.xml:23:9-25:39
+128            android:name="androidx.compose.ui.tooling.PreviewActivity"
+128-->[androidx.compose.ui:ui-tooling-android:1.7.5] C:\Users\hamid\.gradle\caches\transforms-4\f5e594f8c2f1c6e9881fa7e6a62fe1d6\transformed\ui-tooling-release\AndroidManifest.xml:24:13-71
+129            android:exported="true" />
+129-->[androidx.compose.ui:ui-tooling-android:1.7.5] C:\Users\hamid\.gradle\caches\transforms-4\f5e594f8c2f1c6e9881fa7e6a62fe1d6\transformed\ui-tooling-release\AndroidManifest.xml:25:13-36
+130
+131        <service
+131-->[androidx.room:room-runtime:2.6.1] C:\Users\hamid\.gradle\caches\transforms-4\c440a4ab0c78e181197f4f244acb5383\transformed\room-runtime-2.6.1\AndroidManifest.xml:24:9-28:63
+132            android:name="androidx.room.MultiInstanceInvalidationService"
+132-->[androidx.room:room-runtime:2.6.1] C:\Users\hamid\.gradle\caches\transforms-4\c440a4ab0c78e181197f4f244acb5383\transformed\room-runtime-2.6.1\AndroidManifest.xml:25:13-74
+133            android:directBootAware="true"
+133-->[androidx.room:room-runtime:2.6.1] C:\Users\hamid\.gradle\caches\transforms-4\c440a4ab0c78e181197f4f244acb5383\transformed\room-runtime-2.6.1\AndroidManifest.xml:26:13-43
+134            android:exported="false" />
+134-->[androidx.room:room-runtime:2.6.1] C:\Users\hamid\.gradle\caches\transforms-4\c440a4ab0c78e181197f4f244acb5383\transformed\room-runtime-2.6.1\AndroidManifest.xml:27:13-37
+135
+136        <receiver
+136-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+137            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+137-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+138            android:directBootAware="false"
+138-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+139            android:enabled="true"
+139-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+140            android:exported="true"
+140-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+141            android:permission="android.permission.DUMP" >
+141-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+142            <intent-filter>
+142-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+143                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+143-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+143-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+144            </intent-filter>
+145            <intent-filter>
+145-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+146                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+146-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+146-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+147            </intent-filter>
+148            <intent-filter>
+148-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+149                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+149-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+149-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+150            </intent-filter>
+151            <intent-filter>
+151-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+152                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+152-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+152-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\hamid\.gradle\caches\transforms-4\e7b8567c4d3517ea35610047aee313ee\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
+153            </intent-filter>
+154        </receiver>
+155    </application>
+156
+157</manifest>

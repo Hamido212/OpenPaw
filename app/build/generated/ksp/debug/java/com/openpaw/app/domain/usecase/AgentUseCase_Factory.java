@@ -3,6 +3,7 @@ package com.openpaw.app.domain.usecase;
 import com.openpaw.app.data.local.MessageDao;
 import com.openpaw.app.data.remote.LlmProvider;
 import com.openpaw.app.data.repository.MemoryRepository;
+import com.openpaw.app.data.repository.SettingsRepository;
 import com.openpaw.app.domain.tools.ToolRegistry;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
@@ -35,28 +36,34 @@ public final class AgentUseCase_Factory implements Factory<AgentUseCase> {
 
   private final Provider<MemoryRepository> memoryRepositoryProvider;
 
+  private final Provider<SettingsRepository> settingsRepositoryProvider;
+
   public AgentUseCase_Factory(Provider<LlmProvider> llmProvider,
       Provider<ToolRegistry> toolRegistryProvider, Provider<MessageDao> messageDaoProvider,
-      Provider<MemoryRepository> memoryRepositoryProvider) {
+      Provider<MemoryRepository> memoryRepositoryProvider,
+      Provider<SettingsRepository> settingsRepositoryProvider) {
     this.llmProvider = llmProvider;
     this.toolRegistryProvider = toolRegistryProvider;
     this.messageDaoProvider = messageDaoProvider;
     this.memoryRepositoryProvider = memoryRepositoryProvider;
+    this.settingsRepositoryProvider = settingsRepositoryProvider;
   }
 
   @Override
   public AgentUseCase get() {
-    return newInstance(llmProvider.get(), toolRegistryProvider.get(), messageDaoProvider.get(), memoryRepositoryProvider.get());
+    return newInstance(llmProvider.get(), toolRegistryProvider.get(), messageDaoProvider.get(), memoryRepositoryProvider.get(), settingsRepositoryProvider.get());
   }
 
   public static AgentUseCase_Factory create(Provider<LlmProvider> llmProvider,
       Provider<ToolRegistry> toolRegistryProvider, Provider<MessageDao> messageDaoProvider,
-      Provider<MemoryRepository> memoryRepositoryProvider) {
-    return new AgentUseCase_Factory(llmProvider, toolRegistryProvider, messageDaoProvider, memoryRepositoryProvider);
+      Provider<MemoryRepository> memoryRepositoryProvider,
+      Provider<SettingsRepository> settingsRepositoryProvider) {
+    return new AgentUseCase_Factory(llmProvider, toolRegistryProvider, messageDaoProvider, memoryRepositoryProvider, settingsRepositoryProvider);
   }
 
   public static AgentUseCase newInstance(LlmProvider llmProvider, ToolRegistry toolRegistry,
-      MessageDao messageDao, MemoryRepository memoryRepository) {
-    return new AgentUseCase(llmProvider, toolRegistry, messageDao, memoryRepository);
+      MessageDao messageDao, MemoryRepository memoryRepository,
+      SettingsRepository settingsRepository) {
+    return new AgentUseCase(llmProvider, toolRegistry, messageDao, memoryRepository, settingsRepository);
   }
 }

@@ -36,4 +36,12 @@ class LocalLlmProvider @Inject constructor() : LlmProvider {
             "See LocalLlmProvider.kt for implementation hints."
         )
     }
+
+    override suspend fun buildContinuationMessages(
+        response: LlmResponse,
+        toolResults: List<ToolResultEntry>
+    ): List<ApiMessage> {
+        // Same format as Anthropic (tool_result blocks) when implemented
+        throw NotImplementedError("Local LLM not yet implemented.")
+    }
 }

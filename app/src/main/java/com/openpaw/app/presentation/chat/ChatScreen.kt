@@ -6,8 +6,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,8 +31,10 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -44,19 +48,22 @@ import com.openpaw.app.presentation.voice.VoiceInputManager
 import java.text.SimpleDateFormat
 import java.util.*
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ChatScreen(
     onNavigateToSettings: () -> Unit,
     viewModel: ChatViewModel = hiltViewModel()
 ) {
-    val uiState    by viewModel.uiState.collectAsState()
-    val sttState   by viewModel.voiceInputManager.sttState.collectAsState()
-    val ttsEnabled by viewModel.voiceInputManager.ttsEnabled.collectAsState()
-    val context    = LocalContext.current
+    val uiState          by viewModel.uiState.collectAsState()
+    val sttState         by viewModel.voiceInputManager.sttState.collectAsState()
+    val ttsEnabled       by viewModel.voiceInputManager.ttsEnabled.collectAsState()
+    val sessionPreviews  by viewModel.sessionPreviews.collectAsState()
+    val context          = LocalContext.current
+    val clipboardManager = LocalClipboardManager.current
 
-    var inputText by remember { mutableStateOf("") }
-    val listState = rememberLazyListState()
+    var inputText        by remember { mutableStateOf("") }
+    var showSessionSheet by remember { mutableStateOf(false) }
+    val listState        = rememberLazyListState()
 
     // Permission launcher for RECORD_AUDIO
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -68,11 +75,30 @@ fun ChatScreen(
     // Auto-scroll to bottom on new messages
     LaunchedEffect(uiState.messages.size, uiState.isLoading) {
         if (uiState.messages.isNotEmpty()) {
-            listState.animateScrollToItem(uiState.messages.size) // scroll past last message if loading
+            listState.animateScrollToItem(uiState.messages.size)
         }
     }
 
-    // ── Main layout with imePadding to fix keyboard overlap ─────────────────
+    // ── Session history bottom sheet ──────────────────────────────────────────
+    if (showSessionSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showSessionSheet = false }
+        ) {
+            SessionHistorySheet(
+                sessions         = sessionPreviews,
+                currentSessionId = uiState.sessionId,
+                onLoadSession    = { sessionId ->
+                    viewModel.loadSession(sessionId)
+                    showSessionSheet = false
+                },
+                onDeleteSession  = { sessionId ->
+                    viewModel.deleteSession(sessionId)
+                }
+            )
+        }
+    }
+
+    // ── Main layout ───────────────────────────────────────────────────────────
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -81,16 +107,17 @@ fun ChatScreen(
             .imePadding()
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            // ── Top App Bar ─────────────────────────────────────────────────
+            // ── Top App Bar ──────────────────────────────────────────────────
             ModernTopBar(
                 isAccessibilityEnabled = uiState.isAccessibilityEnabled,
-                ttsEnabled = ttsEnabled,
-                onToggleTts = { viewModel.toggleTts() },
-                onNewChat = { viewModel.startNewSession() },
-                onSettings = onNavigateToSettings
+                ttsEnabled             = ttsEnabled,
+                onToggleTts            = { viewModel.toggleTts() },
+                onNewChat              = { viewModel.startNewSession() },
+                onShowHistory          = { showSessionSheet = true },
+                onSettings             = onNavigateToSettings
             )
 
-            // ── Messages area ───────────────────────────────────────────────
+            // ── Messages area ────────────────────────────────────────────────
             Box(modifier = Modifier.weight(1f)) {
                 if (uiState.messages.isEmpty()) {
                     EmptyStateView(
@@ -109,37 +136,41 @@ fun ChatScreen(
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         items(uiState.messages, key = { it.id }) { message ->
-                            AnimatedMessageBubble(message)
+                            AnimatedMessageBubble(
+                                message     = message,
+                                onLongClick = {
+                                    if (message.role != MessageRole.TOOL) {
+                                        clipboardManager.setText(AnnotatedString(message.content))
+                                    }
+                                }
+                            )
                         }
-                        // Typing indicator when loading
                         if (uiState.isLoading) {
-                            item {
-                                TypingIndicator()
-                            }
+                            item { TypingIndicator() }
                         }
                     }
                 }
             }
 
-            // ── Status bar: tool progress or voice state ────────────────────
+            // ── Status bar: tool progress or voice state ─────────────────────
             StatusBar(
-                sttState = sttState,
+                sttState          = sttState,
                 currentToolStatus = uiState.currentToolStatus,
-                error = uiState.error,
-                onDismissError = { viewModel.clearError() }
+                error             = uiState.error,
+                onDismissError    = { viewModel.clearError() }
             )
 
-            // ── Input bar ───────────────────────────────────────────────────
+            // ── Input bar ────────────────────────────────────────────────────
             ModernInputBar(
-                inputText = inputText,
+                inputText    = inputText,
                 onInputChange = { inputText = it },
-                onSend = {
+                onSend        = {
                     if (inputText.isNotBlank()) {
                         viewModel.sendMessage(inputText.trim())
                         inputText = ""
                     }
                 },
-                onMicClick = {
+                onMicClick    = {
                     val isListening = sttState == VoiceInputManager.SttState.LISTENING
                     if (isListening) {
                         viewModel.stopVoiceInput()
@@ -152,24 +183,25 @@ fun ChatScreen(
                     }
                 },
                 isLoading = uiState.isLoading,
-                sttState = sttState
+                sttState  = sttState
             )
         }
     }
 }
 
-// ─── Modern Top Bar ─────────────────────────────────────────────────────────
+// ─── Modern Top Bar ──────────────────────────────────────────────────────────
 @Composable
 private fun ModernTopBar(
     isAccessibilityEnabled: Boolean,
     ttsEnabled: Boolean,
     onToggleTts: () -> Unit,
     onNewChat: () -> Unit,
+    onShowHistory: () -> Unit,
     onSettings: () -> Unit
 ) {
     Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.surface,
+        modifier      = Modifier.fillMaxWidth(),
+        color         = MaterialTheme.colorScheme.surface,
         shadowElevation = 1.dp
     ) {
         Row(
@@ -180,8 +212,8 @@ private fun ModernTopBar(
         ) {
             // Logo + title
             Surface(
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.primaryContainer,
+                shape  = CircleShape,
+                color  = MaterialTheme.colorScheme.primaryContainer,
                 modifier = Modifier.size(40.dp)
             ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
@@ -224,6 +256,14 @@ private fun ModernTopBar(
                     modifier = Modifier.size(22.dp)
                 )
             }
+            IconButton(onClick = onShowHistory) {
+                Icon(
+                    Icons.Outlined.History,
+                    contentDescription = "Chat-Verlauf",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(22.dp)
+                )
+            }
             IconButton(onClick = onNewChat) {
                 Icon(
                     Icons.Outlined.AddComment,
@@ -244,7 +284,126 @@ private fun ModernTopBar(
     }
 }
 
-// ─── Status Bar ─────────────────────────────────────────────────────────────
+// ─── Session History Bottom Sheet ────────────────────────────────────────────
+
+@Composable
+private fun SessionHistorySheet(
+    sessions: List<Message>,
+    currentSessionId: String,
+    onLoadSession: (String) -> Unit,
+    onDeleteSession: (String) -> Unit
+) {
+    val dateFmt = remember { SimpleDateFormat("dd.MM. HH:mm", Locale.getDefault()) }
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text     = "Chat-Verlauf",
+            style    = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 12.dp)
+        )
+
+        if (sessions.isEmpty()) {
+            Box(
+                modifier            = Modifier
+                    .fillMaxWidth()
+                    .padding(32.dp),
+                contentAlignment    = Alignment.Center
+            ) {
+                Text(
+                    "Noch keine gespeicherten Chats",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        } else {
+            LazyColumn(
+                modifier       = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(bottom = 32.dp)
+            ) {
+                items(sessions, key = { it.sessionId }) { session ->
+                    SessionItem(
+                        preview   = session.content.take(70) +
+                                    if (session.content.length > 70) "…" else "",
+                        isActive  = session.sessionId == currentSessionId,
+                        dateStr   = dateFmt.format(Date(session.timestamp)),
+                        onLoad    = { onLoadSession(session.sessionId) },
+                        onDelete  = { onDeleteSession(session.sessionId) }
+                    )
+                    HorizontalDivider(
+                        modifier  = Modifier.padding(horizontal = 16.dp),
+                        thickness = 0.5.dp,
+                        color     = MaterialTheme.colorScheme.outlineVariant
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SessionItem(
+    preview: String,
+    isActive: Boolean,
+    dateStr: String,
+    onLoad: () -> Unit,
+    onDelete: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onLoad)
+            .background(
+                if (isActive) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f)
+                else Color.Transparent
+            )
+            .padding(horizontal = 20.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text  = preview,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 2
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text  = dateStr,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        if (isActive) {
+            Spacer(Modifier.width(8.dp))
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                color = MaterialTheme.colorScheme.primaryContainer
+            ) {
+                Text(
+                    text     = "aktiv",
+                    style    = MaterialTheme.typography.labelSmall,
+                    color    = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                )
+            }
+        }
+        Spacer(Modifier.width(4.dp))
+        IconButton(
+            onClick  = onDelete,
+            modifier = Modifier.size(36.dp)
+        ) {
+            Icon(
+                Icons.Outlined.Delete,
+                contentDescription = "Löschen",
+                tint     = MaterialTheme.colorScheme.error,
+                modifier = Modifier.size(18.dp)
+            )
+        }
+    }
+}
+
+// ─── Status Bar ──────────────────────────────────────────────────────────────
 @Composable
 private fun StatusBar(
     sttState: VoiceInputManager.SttState,
@@ -261,8 +420,8 @@ private fun StatusBar(
 
     AnimatedVisibility(
         visible = statusText != null,
-        enter = expandVertically() + fadeIn(),
-        exit = shrinkVertically() + fadeOut()
+        enter   = expandVertically() + fadeIn(),
+        exit    = shrinkVertically() + fadeOut()
     ) {
         statusText?.let { status ->
             Surface(
@@ -279,9 +438,9 @@ private fun StatusBar(
                 ) {
                     if (sttState == VoiceInputManager.SttState.IDLE) {
                         CircularProgressIndicator(
-                            modifier = Modifier.size(12.dp),
+                            modifier    = Modifier.size(12.dp),
                             strokeWidth = 1.5.dp,
-                            color = MaterialTheme.colorScheme.secondary
+                            color       = MaterialTheme.colorScheme.secondary
                         )
                         Spacer(Modifier.width(8.dp))
                     }
@@ -298,12 +457,12 @@ private fun StatusBar(
     // Error bar
     AnimatedVisibility(
         visible = error != null,
-        enter = expandVertically() + fadeIn(),
-        exit = shrinkVertically() + fadeOut()
+        enter   = expandVertically() + fadeIn(),
+        exit    = shrinkVertically() + fadeOut()
     ) {
         error?.let { err ->
             Surface(
-                color = MaterialTheme.colorScheme.errorContainer,
+                color    = MaterialTheme.colorScheme.errorContainer,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
@@ -313,18 +472,18 @@ private fun StatusBar(
                     Icon(
                         Icons.Default.ErrorOutline,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.error,
+                        tint     = MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
                         err,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        style    = MaterialTheme.typography.labelSmall,
+                        color    = MaterialTheme.colorScheme.onErrorContainer,
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(
-                        onClick = onDismissError,
+                        onClick  = onDismissError,
                         modifier = Modifier.size(24.dp)
                     ) {
                         Icon(
@@ -339,7 +498,7 @@ private fun StatusBar(
     }
 }
 
-// ─── Modern Input Bar ───────────────────────────────────────────────────────
+// ─── Modern Input Bar ────────────────────────────────────────────────────────
 @Composable
 private fun ModernInputBar(
     inputText: String,
@@ -353,14 +512,14 @@ private fun ModernInputBar(
     val pulseScale by rememberInfiniteTransition(label = "pulse")
         .animateFloat(
             initialValue = 1f,
-            targetValue = 1.15f,
+            targetValue  = 1.15f,
             animationSpec = infiniteRepeatable(tween(600), RepeatMode.Reverse),
-            label = "pulse-scale"
+            label        = "pulse-scale"
         )
 
     Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.surface,
+        modifier        = Modifier.fillMaxWidth(),
+        color           = MaterialTheme.colorScheme.surface,
         shadowElevation = 8.dp
     ) {
         Row(
@@ -371,24 +530,24 @@ private fun ModernInputBar(
         ) {
             // Mic button
             Surface(
-                shape = CircleShape,
-                color = if (isListening) MaterialTheme.colorScheme.error
-                else MaterialTheme.colorScheme.secondaryContainer,
+                shape  = CircleShape,
+                color  = if (isListening) MaterialTheme.colorScheme.error
+                         else MaterialTheme.colorScheme.secondaryContainer,
                 modifier = Modifier
                     .size(44.dp)
                     .then(if (isListening) Modifier.scale(pulseScale) else Modifier)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = onMicClick
+                        indication        = null,
+                        onClick           = onMicClick
                     )
             ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     Icon(
                         if (isListening) Icons.Default.MicOff else Icons.Default.Mic,
                         contentDescription = if (isListening) "Stopp" else "Spracheingabe",
-                        tint = if (isListening) MaterialTheme.colorScheme.onError
-                        else MaterialTheme.colorScheme.onSecondaryContainer,
+                        tint     = if (isListening) MaterialTheme.colorScheme.onError
+                                   else MaterialTheme.colorScheme.onSecondaryContainer,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -398,33 +557,33 @@ private fun ModernInputBar(
 
             // Text input field
             Surface(
-                shape = RoundedCornerShape(24.dp),
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
+                shape  = RoundedCornerShape(24.dp),
+                color  = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
                 modifier = Modifier
                     .weight(1f)
                     .heightIn(min = 44.dp)
             ) {
                 Box(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                    modifier         = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
                     if (inputText.isEmpty()) {
                         Text(
-                            text = "OpenPaw fragen…",
+                            text  = "OpenPaw fragen…",
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                             fontSize = 15.sp
                         )
                     }
                     BasicTextField(
-                        value = inputText,
+                        value         = inputText,
                         onValueChange = onInputChange,
-                        textStyle = TextStyle(
-                            color = MaterialTheme.colorScheme.onSurface,
+                        textStyle     = TextStyle(
+                            color    = MaterialTheme.colorScheme.onSurface,
                             fontSize = 15.sp
                         ),
-                        modifier = Modifier.fillMaxWidth(),
-                        maxLines = 5,
-                        enabled = !isLoading && sttState == VoiceInputManager.SttState.IDLE
+                        modifier   = Modifier.fillMaxWidth(),
+                        maxLines   = 5,
+                        enabled    = !isLoading && sttState == VoiceInputManager.SttState.IDLE
                     )
                 }
             }
@@ -434,20 +593,18 @@ private fun ModernInputBar(
             // Send button
             val canSend = inputText.isNotBlank() && !isLoading
             Surface(
-                shape = CircleShape,
-                color = if (canSend) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                shape  = CircleShape,
+                color  = if (canSend) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
                 modifier = Modifier
                     .size(44.dp)
-                    .clickable(
-                        enabled = canSend,
-                        onClick = onSend
-                    )
+                    .clickable(enabled = canSend, onClick = onSend)
             ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     Icon(
                         Icons.Default.Send,
                         contentDescription = "Senden",
-                        tint = if (canSend) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                        tint     = if (canSend) MaterialTheme.colorScheme.onPrimary
+                                   else MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -456,7 +613,7 @@ private fun ModernInputBar(
     }
 }
 
-// ─── Empty state ────────────────────────────────────────────────────────────
+// ─── Empty state ─────────────────────────────────────────────────────────────
 
 @Composable
 private fun EmptyStateView(
@@ -464,9 +621,9 @@ private fun EmptyStateView(
     onSuggestionClick: (String) -> Unit
 ) {
     Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        modifier              = modifier.fillMaxSize(),
+        horizontalAlignment   = Alignment.CenterHorizontally,
+        verticalArrangement   = Arrangement.Center
     ) {
         Text("🐾", fontSize = 64.sp)
         Spacer(Modifier.height(16.dp))
@@ -481,10 +638,10 @@ private fun EmptyStateView(
         Text(
             "🎤 Tippe auf das Mikrofon oder schreib etwas",
             fontSize = 13.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color    = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(Modifier.height(24.dp))
-        
+
         val suggestions = listOf(
             "Lies den Bildschirm vor",
             "WhatsApp an Mama",
@@ -497,7 +654,7 @@ private fun EmptyStateView(
                     row.forEach { suggestion ->
                         SuggestionChip(
                             onClick = { onSuggestionClick(suggestion) },
-                            label = { Text(suggestion, fontSize = 12.sp) }
+                            label   = { Text(suggestion, fontSize = 12.sp) }
                         )
                     }
                 }
@@ -507,10 +664,14 @@ private fun EmptyStateView(
     }
 }
 
-// ─── Animated Message bubble ────────────────────────────────────────────────
+// ─── Animated Message bubble ─────────────────────────────────────────────────
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun AnimatedMessageBubble(message: Message) {
+private fun AnimatedMessageBubble(
+    message: Message,
+    onLongClick: () -> Unit = {}
+) {
     var isVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -519,18 +680,18 @@ private fun AnimatedMessageBubble(message: Message) {
 
     AnimatedVisibility(
         visible = isVisible,
-        enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(initialAlpha = 0f)
+        enter   = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(initialAlpha = 0f)
     ) {
-        val isUser = message.role == MessageRole.USER
-        val isTool = message.role == MessageRole.TOOL
+        val isUser  = message.role == MessageRole.USER
+        val isTool  = message.role == MessageRole.TOOL
         val timeFmt = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
         val timeStr = timeFmt.format(Date(message.timestamp))
 
         if (isTool) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.tertiaryContainer,
+                    shape    = RoundedCornerShape(12.dp),
+                    color    = MaterialTheme.colorScheme.tertiaryContainer,
                     modifier = Modifier.padding(vertical = 4.dp)
                 ) {
                     Row(
@@ -560,7 +721,7 @@ private fun AnimatedMessageBubble(message: Message) {
         ) {
             if (!isUser) {
                 Box(
-                    modifier = Modifier
+                    modifier         = Modifier
                         .size(32.dp)
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.primaryContainer),
@@ -570,7 +731,7 @@ private fun AnimatedMessageBubble(message: Message) {
             }
             Column(
                 horizontalAlignment = if (isUser) Alignment.End else Alignment.Start,
-                modifier = Modifier.widthIn(max = 280.dp)
+                modifier            = Modifier.widthIn(max = 280.dp)
             ) {
                 Surface(
                     shape = RoundedCornerShape(
@@ -578,14 +739,18 @@ private fun AnimatedMessageBubble(message: Message) {
                         topEnd      = if (isUser) 4.dp else 18.dp,
                         bottomStart = 18.dp, bottomEnd = 18.dp
                     ),
-                    color = if (isUser) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.surfaceVariant
+                    color    = if (isUser) MaterialTheme.colorScheme.primary
+                               else MaterialTheme.colorScheme.surfaceVariant,
+                    modifier = Modifier.combinedClickable(
+                        onClick     = {},
+                        onLongClick = onLongClick
+                    )
                 ) {
                     Text(
-                        text = message.content,
+                        text     = message.content,
                         modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
-                        color = if (isUser) MaterialTheme.colorScheme.onPrimary
-                        else MaterialTheme.colorScheme.onSurfaceVariant,
+                        color    = if (isUser) MaterialTheme.colorScheme.onPrimary
+                                   else MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 15.sp
                     )
                 }
@@ -598,7 +763,7 @@ private fun AnimatedMessageBubble(message: Message) {
     }
 }
 
-// ─── Typing Indicator ───────────────────────────────────────────────────────
+// ─── Typing Indicator ────────────────────────────────────────────────────────
 
 @Composable
 private fun TypingIndicator() {
@@ -607,10 +772,10 @@ private fun TypingIndicator() {
             .fillMaxWidth()
             .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment     = Alignment.CenterVertically
     ) {
         Box(
-            modifier = Modifier
+            modifier         = Modifier
                 .size(32.dp)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.primaryContainer),
@@ -628,19 +793,18 @@ private fun TypingIndicator() {
             Row(
                 Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment     = Alignment.CenterVertically
             ) {
                 val transition = rememberInfiniteTransition(label = "dots")
                 val alpha by transition.animateFloat(
-                    initialValue = 0.2f,
-                    targetValue = 1f,
+                    initialValue  = 0.2f,
+                    targetValue   = 1f,
                     animationSpec = infiniteRepeatable(
-                        animation = tween(600, easing = LinearEasing),
+                        animation  = tween(600, easing = LinearEasing),
                         repeatMode = RepeatMode.Reverse
                     ),
                     label = "dot-alpha"
                 )
-                
                 Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha)))
                 Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha * 0.7f)))
                 Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha * 0.4f)))

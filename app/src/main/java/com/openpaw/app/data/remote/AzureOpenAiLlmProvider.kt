@@ -34,9 +34,9 @@ class AzureOpenAiLlmProvider @Inject constructor(
     override val name = "Azure OpenAI"
 
     override suspend fun complete(
-        messages: List<com.openpaw.app.data.remote.dto.ApiMessage>,
+        messages: List<ApiMessage>,
         systemPrompt: String,
-        tools: List<com.openpaw.app.data.remote.dto.ApiTool>
+        tools: List<ApiTool>
     ): LlmResponse {
 
         val endpoint   = settingsRepository.azureEndpoint.first().trimEnd('/')
@@ -58,19 +58,14 @@ class AzureOpenAiLlmProvider @Inject constructor(
             "$endpoint/openai/deployments/$deployment/chat/completions?api-version=2024-02-15-preview"
         }
 
-        // Build messages list: prepend system message
+        // ── Build messages: prepend system, then map ApiMessage → AzureChatMessage ─
         val azureMessages = mutableListOf<AzureChatMessage>()
         if (systemPrompt.isNotBlank()) {
             azureMessages += AzureChatMessage(role = "system", content = systemPrompt)
         }
-        azureMessages += messages.map { msg ->
-            AzureChatMessage(
-                role = msg.role,
-                content = msg.content as? String ?: msg.content.toString()
-            )
-        }
+        azureMessages += messages.map { msg -> msg.toAzureChatMessage() }
 
-        // Convert Anthropic-style tools → OpenAI function-calling format
+        // ── Convert Anthropic-style tools → OpenAI function-calling format ────
         val azureTools = tools.map { tool ->
             AzureTool(
                 function = AzureFunction(
@@ -122,7 +117,68 @@ class AzureOpenAiLlmProvider @Inject constructor(
         return LlmResponse(
             textContent = textContent,
             toolCalls = toolCalls,
-            stopReason = choice.finishReason
+            stopReason = choice.finishReason,
+            rawProviderData = choice.message   // AzureResponseMessage – needed for continuation
+        )
+    }
+
+    /**
+     * Azure / OpenAI continuation format:
+     *
+     *   [assistant]  content=null, tool_calls=[{id, function:{name, arguments}}, ...]
+     *   [tool]       tool_call_id=..., content="result"   (one per tool call)
+     */
+    override suspend fun buildContinuationMessages(
+        response: LlmResponse,
+        toolResults: List<ToolResultEntry>
+    ): List<ApiMessage> {
+        val rawMessage = response.rawProviderData as? AzureResponseMessage
+
+        // 1. Re-emit the assistant message that contained the tool calls.
+        val assistantMsg = ApiMessage(
+            role           = "assistant",
+            content        = rawMessage?.content ?: "",   // usually null when only tool_calls
+            azureToolCalls = rawMessage?.toolCalls        // raw AzureToolCall list
+        )
+
+        // 2. One tool result message per executed tool call.
+        val toolMsgs = toolResults.map { entry ->
+            ApiMessage(
+                role       = "tool",
+                content    = entry.content,
+                toolCallId = entry.toolCallId
+            )
+        }
+
+        return listOf(assistantMsg) + toolMsgs
+    }
+
+    // ── Private helper ────────────────────────────────────────────────────────
+
+    /**
+     * Map a generic [ApiMessage] to an [AzureChatMessage], handling three cases:
+     *
+     * 1. role="tool"            → tool result message  (toolCallId required)
+     * 2. azureToolCalls != null → assistant message with tool_calls (agent loop continuation)
+     * 3. everything else        → regular text message
+     */
+    private fun ApiMessage.toAzureChatMessage(): AzureChatMessage = when {
+        role == "tool" -> AzureChatMessage(
+            role       = "tool",
+            content    = content as? String ?: content.toString(),
+            toolCallId = toolCallId
+        )
+        azureToolCalls != null -> {
+            @Suppress("UNCHECKED_CAST")
+            AzureChatMessage(
+                role      = "assistant",
+                content   = null,
+                toolCalls = azureToolCalls as? List<AzureToolCall>
+            )
+        }
+        else -> AzureChatMessage(
+            role    = role,
+            content = if (content is String) content else null
         )
     }
 }
