@@ -7,6 +7,7 @@ import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
+import android.speech.tts.Voice
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -62,11 +63,45 @@ class VoiceInputManager @Inject constructor(
     private var ttsReady = false
 
     init {
-        // Pre-initialize TTS so the first call doesn't have a cold-start delay
-        tts = TextToSpeech(context) { status ->
-            ttsReady = (status == TextToSpeech.SUCCESS)
-            if (ttsReady) tts?.language = Locale.getDefault()
-        }
+        initTts()
+    }
+
+    /**
+     * Try Google TTS engine first (neural voices). If it fails to init,
+     * fall back to the system default TTS engine.
+     */
+    private fun initTts() {
+        tts = TextToSpeech(context, { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                configureTts()
+            } else {
+                // Google TTS not available – retry with system default
+                tts = TextToSpeech(context) { s ->
+                    ttsReady = (s == TextToSpeech.SUCCESS)
+                    if (ttsReady) configureTts()
+                }
+            }
+        }, "com.google.android.tts")
+    }
+
+    private fun configureTts() {
+        ttsReady = true
+        val locale = Locale.getDefault()
+        tts?.language = locale
+
+        // Pick the highest-quality OFFLINE voice for the user's language.
+        // Google TTS ships several voice qualities (Normal / High / Very High).
+        val bestVoice: Voice? = tts?.voices
+            ?.filter { v ->
+                !v.isNetworkConnectionRequired &&
+                v.locale.language == locale.language &&
+                (v.features == null || !v.features.contains(TextToSpeech.Engine.KEY_FEATURE_NOT_INSTALLED))
+            }
+            ?.maxByOrNull { it.quality }
+        if (bestVoice != null) tts?.voice = bestVoice
+
+        tts?.setSpeechRate(1.15f)  // slightly faster = less robotic
+        tts?.setPitch(1.0f)
     }
 
     // ── STT ───────────────────────────────────────────────────────────────────
@@ -104,7 +139,9 @@ class VoiceInputManager @Inject constructor(
                 putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
                 putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
                 putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
-                putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 2000L)
+                // Shorter silence thresholds = faster response after user stops speaking
+                putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 1200L)
+                putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 700L)
             })
         }
     }
@@ -129,4 +166,19 @@ class VoiceInputManager @Inject constructor(
     }
 
     fun stopSpeaking() { tts?.stop() }
+
+    /**
+     * Speak [text] regardless of the in-app TTS toggle.
+     * Used by FloatingBubbleService where TTS is the primary output channel.
+     */
+    fun speakAlways(text: String) {
+        if (!ttsReady || text.isBlank()) return
+        val clean = text
+            .replace(Regex("\\*+"), "")
+            .replace(Regex("`+"), "")
+            .replace(Regex("#+\\s*"), "")
+            .trim()
+            .take(500)
+        tts?.speak(clean, TextToSpeech.QUEUE_FLUSH, null, "tts_${System.currentTimeMillis()}")
+    }
 }

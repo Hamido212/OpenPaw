@@ -81,17 +81,39 @@ class AgentUseCase @Inject constructor(
             3. NIEMALS den OpenPaw Chat-Screen lesen – der ist irrelevant für Geräteaufgaben
             4. control_screen(action=read) NUR nutzen wenn du wirklich nicht weißt was auf dem Screen steht
 
+            ══ TEXT IN APPS EINGEBEN (Notizen, Keep, Docs usw.) ══
+            Wenn du langen Text in eine App einfügen sollst (Rezept, Liste, Notiz):
+            1. clipboard(action=copy, text=<VOLLSTÄNDIGER TEXT>) – Text in Zwischenablage kopieren
+            2. control_screen(action=home) – zum Homescreen
+            3. open_app(app_name="Notizen") – App öffnen
+            4. control_screen(action=read) – einmal lesen um "Neue Notiz" / "+" Button zu finden
+            5. control_screen(action=click, query="+") ODER click auf "Neue Notiz" / "Neu"
+            6. control_screen(action=input, text=<TITEL>) – Titel eintippen (kurz)
+            7. control_screen(action=tap, x=540, y=700) – in den Textbereich tippen um Fokus zu setzen
+            8. control_screen(action=input, text=" ") – leeres Leerzeichen um Paste-Menu zu triggern ODER
+               clipboard(action=paste) – Text einfügen
+            WICHTIG: Niemals versuchen langen Text Zeichen für Zeichen zu tippen – immer clipboard nutzen!
+
             EFFIZIENZ-REGELN (halte die Schritte minimal!):
             - Verwende open_app statt manuell zum Launcher zu navigieren
             - Lese den Screen NICHT nach jeder Aktion – nur wenn unbedingt nötig
             - Fasse mehrere Schritte zusammen wo möglich
+            - Bei Notizen-Apps: immer clipboard als Brücke nutzen, nie langen Text mit input tippen
+
+            ══ SELBST-LERNEN (WICHTIG!) ══
+            Du lernst aus deinen Fehlern und merkst dir was funktioniert:
+            - Wenn ein Ansatz fehlschlägt, analysiere WARUM und versuche sofort eine Alternative
+            - Wenn du nach einem Fehler eine funktionierende Methode findest, speichere sie:
+              manage_memory(action=save, key="learn_<app>_<aufgabe>", value="<was funktioniert hat>")
+            - Beim nächsten Mal: manage_memory(action=get) lesen um direkt den richtigen Weg zu nehmen
+            - Beispiel: click auf "+" hat nicht funktioniert, tap auf Koordinaten hat geklappt →
+              speichere: key="learn_notizen_neue_notiz", value="tap bei x=950,y=200 statt click auf +"
 
             ALLGEMEINE REGELN:
             - Aufgaben VOLLSTÄNDIG ausführen – nicht nur antworten, sondern HANDELN
             - Bei mehrstufigen Aufgaben: jeden Schritt mit dem passenden Tool ausführen
-            - Wenn ein Tool fehlschlägt, probiere einen alternativen Weg
             - Kurz nachfragen, BEVOR Nachrichten gesendet oder irrev. Aktionen ausgeführt werden
-            - manage_memory für Nutzerpräferenzen nutzen
+            - manage_memory für Nutzerpräferenzen und gelernte Methoden nutzen
             - Auf Deutsch antworten (oder Englisch wenn Nutzer Englisch schreibt)$userContext
         """.trimIndent()
     }
@@ -128,6 +150,8 @@ class AgentUseCase @Inject constructor(
 
         try {
             var iterations = 0
+            var consecutiveFailures = 0   // tracks how many iterations in a row had failures
+            var hadFailureLastIteration = false
 
             // ── 4. Agent loop ──────────────────────────────────────────────────
             while (iterations < maxIterations) {
@@ -189,6 +213,51 @@ class AgentUseCase @Inject constructor(
                     toolResults = toolResultEntries
                 )
                 conversationMessages.addAll(continuationMsgs)
+
+                // ── 4e. ReAct self-reflection on failure ───────────────────────
+                val failedTools = toolResultEntries.filter { it.isError }
+                val allSucceeded = failedTools.isEmpty()
+
+                if (allSucceeded) {
+                    // If previous iteration had failures but this one succeeded → recovered!
+                    // Encourage the agent to save the working approach to memory.
+                    if (hadFailureLastIteration) {
+                        conversationMessages.add(
+                            ApiMessage(
+                                role    = "user",
+                                content = "✓ Das hat jetzt funktioniert! Bitte speichere die erfolgreiche " +
+                                    "Methode mit manage_memory(action=save), damit du sie beim nächsten " +
+                                    "Mal direkt nutzen kannst. Dann mach weiter mit der Aufgabe."
+                            )
+                        )
+                    }
+                    consecutiveFailures = 0
+                    hadFailureLastIteration = false
+                } else {
+                    consecutiveFailures++
+                    hadFailureLastIteration = true
+                    val failedNames = failedTools.joinToString(", ") { it.toolName }
+
+                    // Build a reflection hint that escalates with repeated failures
+                    val reflectionHint = buildString {
+                        append("🔁 SELBST-REFLEKTION: Die folgenden Tools sind fehlgeschlagen: $failedNames.\n")
+                        if (consecutiveFailures >= 3) {
+                            append("Du hast jetzt $consecutiveFailures Mal in Folge Fehler gehabt. " +
+                                "Wähle einen KOMPLETT anderen Ansatz:\n")
+                        } else {
+                            append("Analysiere kurz warum und probiere einen anderen Weg:\n")
+                        }
+                        append("- control_screen click fehlgeschlagen? → tap mit Koordinaten versuchen\n")
+                        append("- control_screen input fehlgeschlagen? → clipboard(copy) + clipboard(paste)\n")
+                        append("- open_app fehlgeschlagen? → control_screen(home) + manuell auf Launcher klicken\n")
+                        append("- scroll fehlgeschlagen? → swipe versuchen\n")
+                        append("Erkläre in einem Satz was du anders machen wirst, dann führe es aus.")
+                    }
+
+                    conversationMessages.add(
+                        ApiMessage(role = "user", content = reflectionHint)
+                    )
+                }
             }
 
             // Guard against hitting the iteration limit

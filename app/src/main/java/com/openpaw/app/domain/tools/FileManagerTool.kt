@@ -2,6 +2,7 @@ package com.openpaw.app.domain.tools
 
 import android.content.Context
 import android.content.Intent
+import android.os.Environment
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import javax.inject.Inject
@@ -23,7 +24,11 @@ class FileManagerTool @Inject constructor(
     override val requiredParameters = listOf("action")
 
     private fun storageDir(subfolder: String?): File {
-        val base = context.getExternalFilesDir(null) ?: context.filesDir
+        // Use the public Documents folder so files are visible to other apps (file managers, etc.)
+        val base = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+            ?: context.getExternalFilesDir(null)
+            ?: context.filesDir
+        base.mkdirs()
         return if (!subfolder.isNullOrBlank()) {
             File(base, subfolder).also { it.mkdirs() }
         } else {

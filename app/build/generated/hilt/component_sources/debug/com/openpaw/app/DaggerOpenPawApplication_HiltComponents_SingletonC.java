@@ -439,18 +439,18 @@ public final class DaggerOpenPawApplication_HiltComponents_SingletonC {
     private static final class LazyClassKeyProvider {
       static String com_openpaw_app_presentation_settings_SettingsViewModel = "com.openpaw.app.presentation.settings.SettingsViewModel";
 
-      static String com_openpaw_app_presentation_onboarding_OnboardingViewModel = "com.openpaw.app.presentation.onboarding.OnboardingViewModel";
-
       static String com_openpaw_app_presentation_chat_ChatViewModel = "com.openpaw.app.presentation.chat.ChatViewModel";
+
+      static String com_openpaw_app_presentation_onboarding_OnboardingViewModel = "com.openpaw.app.presentation.onboarding.OnboardingViewModel";
 
       @KeepFieldType
       SettingsViewModel com_openpaw_app_presentation_settings_SettingsViewModel2;
 
       @KeepFieldType
-      OnboardingViewModel com_openpaw_app_presentation_onboarding_OnboardingViewModel2;
+      ChatViewModel com_openpaw_app_presentation_chat_ChatViewModel2;
 
       @KeepFieldType
-      ChatViewModel com_openpaw_app_presentation_chat_ChatViewModel2;
+      OnboardingViewModel com_openpaw_app_presentation_onboarding_OnboardingViewModel2;
     }
   }
 
@@ -497,17 +497,17 @@ public final class DaggerOpenPawApplication_HiltComponents_SingletonC {
 
     @IdentifierNameString
     private static final class LazyClassKeyProvider {
-      static String com_openpaw_app_presentation_onboarding_OnboardingViewModel = "com.openpaw.app.presentation.onboarding.OnboardingViewModel";
-
       static String com_openpaw_app_presentation_settings_SettingsViewModel = "com.openpaw.app.presentation.settings.SettingsViewModel";
+
+      static String com_openpaw_app_presentation_onboarding_OnboardingViewModel = "com.openpaw.app.presentation.onboarding.OnboardingViewModel";
 
       static String com_openpaw_app_presentation_chat_ChatViewModel = "com.openpaw.app.presentation.chat.ChatViewModel";
 
       @KeepFieldType
-      OnboardingViewModel com_openpaw_app_presentation_onboarding_OnboardingViewModel2;
+      SettingsViewModel com_openpaw_app_presentation_settings_SettingsViewModel2;
 
       @KeepFieldType
-      SettingsViewModel com_openpaw_app_presentation_settings_SettingsViewModel2;
+      OnboardingViewModel com_openpaw_app_presentation_onboarding_OnboardingViewModel2;
 
       @KeepFieldType
       ChatViewModel com_openpaw_app_presentation_chat_ChatViewModel2;
@@ -638,6 +638,7 @@ public final class DaggerOpenPawApplication_HiltComponents_SingletonC {
 
     private FloatingBubbleService injectFloatingBubbleService2(FloatingBubbleService instance2) {
       FloatingBubbleService_MembersInjector.injectVoiceInputManager(instance2, singletonCImpl.voiceInputManagerProvider.get());
+      FloatingBubbleService_MembersInjector.injectAgentUseCase(instance2, singletonCImpl.agentUseCaseProvider.get());
       return instance2;
     }
   }

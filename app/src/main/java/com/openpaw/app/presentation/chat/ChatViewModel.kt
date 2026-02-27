@@ -42,14 +42,19 @@ class ChatViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     init {
-        // Observe messages from DB for current session
+        // Observe messages from DB — switch to the new session's flow whenever sessionId changes.
+        // flatMapLatest cancels the old DB flow and starts a new one; distinctUntilChanged
+        // prevents re-subscription when messages update (which would also change _uiState).
         viewModelScope.launch {
-            _uiState.collect { state ->
-                messageDao.getMessagesForSession(state.sessionId)
-                    .collect { messages ->
-                        _uiState.update { it.copy(messages = messages) }
-                    }
-            }
+            _uiState
+                .map { it.sessionId }
+                .distinctUntilChanged()
+                .flatMapLatest { sessionId ->
+                    messageDao.getMessagesForSession(sessionId)
+                }
+                .collect { messages ->
+                    _uiState.update { it.copy(messages = messages) }
+                }
         }
         viewModelScope.launch {
             OpenPawAccessibilityService.instance.collect { service ->
@@ -119,11 +124,23 @@ class ChatViewModel @Inject constructor(
     // ── Session management ────────────────────────────────────────────────────
 
     fun startNewSession() {
-        _uiState.update { ChatUiState(sessionId = UUID.randomUUID().toString()) }
+        _uiState.update { current ->
+            ChatUiState(
+                sessionId              = UUID.randomUUID().toString(),
+                isAccessibilityEnabled = current.isAccessibilityEnabled,
+                isAgentServiceRunning  = current.isAgentServiceRunning
+            )
+        }
     }
 
     fun loadSession(sessionId: String) {
-        _uiState.update { ChatUiState(sessionId = sessionId) }
+        _uiState.update { current ->
+            ChatUiState(
+                sessionId              = sessionId,
+                isAccessibilityEnabled = current.isAccessibilityEnabled,
+                isAgentServiceRunning  = current.isAgentServiceRunning
+            )
+        }
     }
 
     fun deleteSession(sessionId: String) {

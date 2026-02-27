@@ -1,135 +1,171 @@
-# 🐾 OpenPaw – KI-Agent für Android
+<div align="center">
 
-Ein intelligenter KI-Agent der direkt auf deinem Android-Handy läuft. Schreib oder sprich mit ihm – er steuert dein Gerät, auch wenn eine andere App geöffnet ist.
+<img src="docs/banner.png" alt="OpenPaw Banner" width="100%">
+
+# 🐾 OpenPaw
+
+**The open-source AI agent that runs directly on your Android phone.**
+
+Voice or text — OpenPaw reads your screen, taps buttons, opens apps, and executes tasks across your entire device, even while another app is in the foreground.
+
+[![Android](https://img.shields.io/badge/Platform-Android%208.0%2B-3DDC84?logo=android&logoColor=white)](https://developer.android.com)
+[![Kotlin](https://img.shields.io/badge/Kotlin-100%25-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Build](https://img.shields.io/badge/Build-Passing-brightgreen)](https://github.com/Hamido212/OpenPaw)
+
+</div>
+
+---
+
+## What is OpenPaw?
+
+OpenPaw turns any Android phone into a voice-first AI assistant that can **actually do things** — not just answer questions. Using Android's Accessibility API, it gains eyes and hands across your entire device. Tap the floating 🐾 bubble from anywhere, speak your request, and watch it happen.
+
+> **"Play my liked songs on Spotify"** → OpenPaw opens Spotify, navigates to Liked Songs, hits Play.
+> **"Send a WhatsApp to Mom: I'll be home by 7"** → WhatsApp opens with the message pre-filled.
+> **"Set a timer for 20 minutes"** → Done, no app switching needed.
 
 ---
 
 ## Features
 
-### 🎤 Voice Input & TTS
-- **Mikrofon-Button** im Chat – kein Tippen nötig
-- Android-eigene Speech-to-Text (Google STT, kein API-Key)
-- **Sprachausgabe (TTS)**: Agent liest Antworten vor (Toggle in der TopBar)
+### 🎤 Voice-First Interaction
+- **One-tap to talk** — microphone button in the chat bar
+- Uses Android's native SpeechRecognizer (Google STT, no extra API key)
+- **Text-to-Speech** responses with the highest-quality offline voice available
+- Automatically prefers Google TTS engine for natural-sounding output
 
-### 🫧 Floating Bubble
-- Schwebende 🐾-Schaltfläche über **allen** Apps
-- Draggable – überall hinziehen
-- Antippen → OpenPaw öffnet sich + Spracheingabe startet sofort
-- Aktivieren: Einstellungen → Floating Bubble → Berechtigung erteilen → Starten
+### 🫧 Floating Bubble — Control Your Phone Hands-Free
+- A draggable 🐾 overlay that floats **over every app**
+- **Tap once** → voice interaction starts directly in the overlay (no app switch)
+- The bubble shows real-time status: 🔵 Idle → 🔴 Listening → 🟠 Processing
+- Response appears in a minimal overlay card and is read aloud via TTS
+- Enable: *Settings → Floating Bubble → Grant permission → Start*
+
+### 🖥️ Full Screen Control via AccessibilityService
+The AI can see and interact with your entire screen — in any app:
+
+| Action | Description |
+|--------|-------------|
+| `read` | Dump all visible text and interactive elements |
+| `click` | Click any button or link by its label text |
+| `input` | Type text into any field |
+| `scroll` | Scroll up / down / left / right |
+| `swipe` | Swipe gestures (TikTok, carousels, etc.) |
+| `tap` | Tap at exact pixel coordinates |
+| `back / home / recents` | System navigation keys |
+
+### 🤖 Multi-Provider LLM Support
+Switch providers at runtime — no restart required:
+
+| Provider | Models | Notes |
+|----------|--------|-------|
+| **Anthropic Claude** | claude-haiku-4-5, sonnet-4-6, opus-4-6 | Direct API, streaming |
+| **Azure AI Foundry** | Kimi-K2.5, GPT-4o, Phi-4, and more | Auto-detects Foundry vs. Classic |
+| **Azure OpenAI (Classic)** | GPT-4, GPT-4o | Standard OpenAI-compatible endpoint |
+| **Local LLM** *(coming soon)* | Gemini Nano, llama.cpp | 100% on-device, no API key |
 
 ### ⚡ Quick Settings Tile
-- 🐾 OpenPaw-Tile im Benachrichtigungsmenü
-- Einmal tippen → App öffnet + Spracheingabe startet
-- Hinzufügen: Panel → Stift-Symbol → OpenPaw reinziehen
+- 🐾 tile in your notification shade
+- One tap from the lock screen → app opens with voice input already active
 
-### 🖥️ Screen Control (AccessibilityService)
-Liest und steuert den **gesamten Bildschirm** – auch in anderen Apps:
-
-| Aktion | Beschreibung |
-|--------|-------------|
-| `read` | Liest alles was auf dem Bildschirm steht |
-| `click` | Klickt auf Buttons/Links per Text-Suche |
-| `input` | Tippt Text in Eingabefelder |
-| `scroll` | Scrollt hoch/runter |
-| `swipe` | Wischt links/rechts (z.B. TikTok) |
-| `back/home/recents` | System-Buttons |
-
-### 🤖 AI Providers (umschaltbar ohne Neustart)
-
-| Provider | Modell | Endpoint |
-|----------|--------|----------|
-| Anthropic Claude | haiku-4-5 / sonnet-4-6 / opus-4-6 | api.anthropic.com |
-| Azure AI Foundry | Kimi-K2.5 / GPT-4o / … | *.services.ai.azure.com |
-| Azure OpenAI (Classic) | GPT-4 / … | *.openai.azure.com |
-| Local LLM | — | kommt bald (Gemini Nano / llama.cpp) |
+### 🧠 Persistent Memory
+The agent remembers facts about you across sessions — name, preferences, routines — using a key/value memory store.
 
 ---
 
-## Tools
+## Built-in Tools
 
-| Tool | Was es macht |
+| Tool | What It Does |
 |------|-------------|
-| `control_screen` | Bildschirm lesen, tippen, scrollen, wischen |
-| `send_whatsapp` | WhatsApp mit vorausgefüllter Nachricht öffnen |
-| `sms` | SMS senden oder lesen (klassisch, kein WhatsApp) |
-| `create_calendar_event` | Kalender-Event erstellen |
-| `set_alarm` | Alarm oder Timer setzen |
-| `open_app` | App per Name starten (Spotify, Maps, Instagram…) |
-| `manage_memory` | Fakten über dich dauerhaft speichern/abrufen |
-| `file_manager` | Dateien lesen, schreiben, auflisten, teilen |
-| `clipboard` | Text in Zwischenablage kopieren oder lesen |
+| `control_screen` | Read screen, click, type, scroll, swipe, navigate |
+| `open_app` | Launch any app by name (Spotify, Maps, Instagram…) |
+| `send_whatsapp` | Open WhatsApp with a pre-filled message |
+| `sms` | Send or read SMS messages |
+| `create_calendar_event` | Add calendar events (ISO 8601 time support) |
+| `set_alarm` | Set alarms or countdown timers |
+| `manage_memory` | Save and recall persistent facts about the user |
+| `file_manager` | Read, write, list, and share files |
+| `clipboard` | Copy text to clipboard or read clipboard content |
 
 ---
 
 ## Quick Start
 
-### 1. API-Key eintragen
+### 1. Get an API Key
 
-In der App unter **Einstellungen → KI-Anbieter** auswählen und Key eintragen.
-
-**Anthropic:**
+**Anthropic Claude** — [console.anthropic.com](https://console.anthropic.com)
 ```
 sk-ant-api03-...
 ```
 
-**Azure AI Foundry:**
+**Azure AI Foundry** — [ai.azure.com](https://ai.azure.com)
 ```
-Endpoint:    https://DEINE-RESSOURCE.services.ai.azure.com
-Deployment:  Kimi-K2.5  (oder anderes Modell)
-API Key:     aus Azure Portal → Schlüssel und Endpunkt
+Endpoint:    https://YOUR-RESOURCE.services.ai.azure.com
+Deployment:  Kimi-K2.5   (or any deployed model)
+API Key:     Azure Portal → Keys and Endpoints
 ```
 
-### 2. Build & installieren
+### 2. Build and Install
+
+Prerequisites: Android Studio with JDK 17+ and Android SDK
 
 ```bash
-export JAVA_HOME="/c/Program Files/Android/Android Studio/jbr"
-export ANDROID_HOME="/c/Users/DEIN_USER/AppData/Local/Android/Sdk"
+# Clone the repo
+git clone https://github.com/Hamido212/OpenPaw.git
+cd OpenPaw
 
+# Build the debug APK
 ./gradlew assembleDebug
+
+# Install on a connected device
 adb install app/build/outputs/apk/debug/app-debug.apk
 ```
 
-### 3. Einmalige Einrichtung (empfohlen)
+### 3. One-Time Setup (Recommended)
+
+Open the app and go to **Settings** to enable the following:
 
 ```
-Einstellungen → Bildschirm-Steuerung → Aktivieren
-Einstellungen → Hintergrund-Agent → Starten
-Einstellungen → Floating Bubble → Berechtigung erteilen → Starten
+Settings → AI Provider        → Enter your API key
+Settings → Screen Control     → Enable Accessibility Service
+Settings → Background Agent   → Start Foreground Service
+Settings → Floating Bubble    → Grant "Draw over apps" permission → Start
 ```
 
-### 4. Benutzen
+### 4. Start Talking
 
 ```
-Du (Sprache oder Text): "Lies mir vor was auf dem Bildschirm steht"
-OpenPaw: Liest TikTok/Instagram/YouTube vor ✓
+You: "What's on my screen right now?"
+OpenPaw: Reads the current screen content aloud ✓
 
-Du: "Schick eine WhatsApp an Mama: Ich bin um 7 zuhause"
-OpenPaw: WhatsApp mit vorausgefüllter Nachricht geöffnet ✓
+You: "Open Spotify and play my liked songs"
+OpenPaw: Opens Spotify → navigates to Liked Songs → hits Play ✓
 
-Du: "Speicher das Rezept aus dem Video in eine Datei"
-OpenPaw: Screen gelesen → recipes.txt gespeichert ✓
+You: "Send a WhatsApp to +49123456789: On my way!"
+OpenPaw: WhatsApp opens with message pre-filled ✓
 
-Du: "Sende eine SMS an +49123456789: Bin gleich da"
-OpenPaw: SMS gesendet ✓
+You: "Save the recipe from this video to a file"
+OpenPaw: Reads screen → saves content to recipes.txt ✓
 ```
 
 ---
 
-## Architektur
+## Architecture
 
 ```
 app/
 ├── data/
-│   ├── local/          # Room DB (Nachrichtenverlauf, Erinnerungen)
-│   ├── remote/         # LlmProvider Interface + Implementierungen
+│   ├── local/              # Room DB — message history & memory store
+│   ├── remote/             # LLM provider abstraction + implementations
 │   │   ├── AnthropicLlmProvider.kt
-│   │   ├── AzureOpenAiLlmProvider.kt   # Auto-erkennt Classic vs Foundry
-│   │   ├── DelegatingLlmProvider.kt    # Laufzeit-Switching
-│   │   └── LocalLlmProvider.kt         # Stub (kommt bald)
-│   └── repository/     # MemoryRepository, SettingsRepository
+│   │   ├── AzureOpenAiLlmProvider.kt   # Auto-detects Classic vs. Foundry
+│   │   ├── DelegatingLlmProvider.kt    # Runtime provider switching
+│   │   └── LocalLlmProvider.kt         # Stub (coming soon)
+│   └── repository/         # MemoryRepository, SettingsRepository
 ├── domain/
-│   ├── tools/          # Tool-Implementierungen + ToolRegistry
-│   │   ├── ScreenTool.kt        # AccessibilityService-Wrapper
+│   ├── tools/              # Tool implementations + ToolRegistry
+│   │   ├── ScreenTool.kt           # Accessibility Service wrapper
 │   │   ├── WhatsAppTool.kt
 │   │   ├── SmsTool.kt
 │   │   ├── CalendarTool.kt
@@ -138,80 +174,149 @@ app/
 │   │   ├── MemoryTool.kt
 │   │   ├── FileManagerTool.kt
 │   │   └── ClipboardTool.kt
-│   └── usecase/        # AgentUseCase (LLM + Tool-Execution Loop)
+│   └── usecase/            # AgentUseCase — LLM ↔ tool execution loop
 ├── presentation/
-│   ├── chat/           # ChatScreen + ChatViewModel
-│   ├── settings/       # SettingsScreen + SettingsViewModel
-│   ├── tile/           # OpenPawQsTile (Quick Settings)
-│   └── voice/          # VoiceInputManager (STT + TTS)
+│   ├── chat/               # ChatScreen + ChatViewModel
+│   ├── settings/           # SettingsScreen + SettingsViewModel
+│   ├── tile/               # OpenPawQsTile (Quick Settings)
+│   └── voice/              # VoiceInputManager (STT + TTS)
 ├── service/
-│   ├── AgentForegroundService.kt      # Hält Prozess am Leben
-│   ├── FloatingBubbleService.kt       # Overlay-Blase über allen Apps
-│   └── OpenPawAccessibilityService.kt # Screen lesen + steuern
-└── di/                 # Hilt Module
+│   ├── AgentForegroundService.kt       # Keeps the process alive
+│   ├── FloatingBubbleService.kt        # Overlay bubble with full voice loop
+│   └── OpenPawAccessibilityService.kt  # Screen reader + controller
+└── di/                     # Hilt dependency injection modules
+```
+
+**Agent Loop** (`AgentUseCase`):
+```
+User input
+    ↓
+LLM call (with tool definitions)
+    ↓
+Tool calls? ──Yes──→ Execute tools → Feed results back to LLM → Loop (max 10×)
+    ↓ No
+Final response → DB → UI + TTS
 ```
 
 ---
 
 ## Tech Stack
 
-| Technologie | Verwendung |
-|------------|-----------|
+| Technology | Purpose |
+|------------|---------|
 | Kotlin + Jetpack Compose | UI |
 | Hilt | Dependency Injection |
-| Room | SQLite (Verlauf + Memory) |
-| Retrofit + OkHttp + Gson | API-Clients |
-| DataStore | Einstellungen |
-| SpeechRecognizer | Spracheingabe (System-STT) |
-| TextToSpeech | Sprachausgabe (System-TTS) |
-| AccessibilityService | Screen lesen + steuern |
-| WindowManager Overlay | Floating Bubble |
-| TileService | Quick Settings Tile |
+| Room | SQLite — message history & memory |
+| Retrofit + OkHttp + Gson | LLM API clients |
+| DataStore | User settings persistence |
+| SpeechRecognizer | Voice input (on-device, no API key) |
+| TextToSpeech | Voice output (prefers Google TTS engine) |
+| AccessibilityService | Screen reading and control |
+| WindowManager Overlay | Floating bubble |
+| TileService | Quick Settings tile |
 
 ---
 
-## Benötigte Berechtigungen
+## Required Permissions
 
-| Permission | Wozu |
-|-----------|------|
-| `INTERNET` | KI-API-Aufrufe |
-| `RECORD_AUDIO` | Spracheingabe (wird beim ersten Tippen gefragt) |
-| `SYSTEM_ALERT_WINDOW` | Floating Bubble über anderen Apps |
-| `READ_SMS` / `SEND_SMS` | SMS lesen und senden |
-| `READ_CALENDAR` / `WRITE_CALENDAR` | Kalender-Events |
-| `SET_ALARM` | Alarme und Timer |
-| `READ_CONTACTS` | Kontaktsuche (optional) |
-| `FOREGROUND_SERVICE` | Hintergrund-Agent + Floating Bubble |
-| `BIND_ACCESSIBILITY_SERVICE` | Screen-Control |
-| `POST_NOTIFICATIONS` | Notifications (Android 13+) |
+| Permission | Why |
+|-----------|-----|
+| `INTERNET` | LLM API calls |
+| `RECORD_AUDIO` | Voice input |
+| `SYSTEM_ALERT_WINDOW` | Floating bubble overlay |
+| `READ_SMS` / `SEND_SMS` | SMS tool |
+| `READ_CALENDAR` / `WRITE_CALENDAR` | Calendar tool |
+| `SET_ALARM` | Alarm and timer tool |
+| `READ_CONTACTS` | Contact lookup (optional) |
+| `FOREGROUND_SERVICE` | Background agent + floating bubble |
+| `BIND_ACCESSIBILITY_SERVICE` | Screen control |
+| `POST_NOTIFICATIONS` | Android 13+ notifications |
 
 ---
 
-## Neues Tool hinzufügen
+## Adding a Custom Tool
 
-1. Klasse in `domain/tools/` erstellen die `Tool` implementiert
-2. `@Singleton` + `@Inject constructor(@ApplicationContext context: Context)`
-3. In `ToolRegistry` registrieren (Konstruktor-Parameter + Liste)
+1. Create a class in `domain/tools/` that implements the `Tool` interface
+2. Annotate it with `@Singleton` and inject dependencies via `@Inject constructor`
+3. Register it in `ToolRegistry` — Hilt wires everything automatically
 
-Hilt verdrahtet alles automatisch.
+```kotlin
+@Singleton
+class MyTool @Inject constructor(
+    @ApplicationContext private val context: Context
+) : Tool {
+    override val name = "my_tool"
+    override val description = "What this tool does"
+    override val parameters = mapOf(
+        "input" to ToolParameter("string", "The input value")
+    )
+    override val requiredParameters = listOf("input")
+
+    override suspend fun execute(input: Map<String, Any>): ToolResult {
+        val value = input["input"] as? String ?: return ToolResult(false, "Missing input")
+        // ... do something
+        return ToolResult(true, "Done: $value")
+    }
+}
+```
 
 ---
 
 ## Roadmap
 
-- [x] Spracheingabe (STT)
-- [x] Sprachausgabe (TTS)
-- [x] Floating Bubble
-- [x] Quick Settings Tile
-- [x] AccessibilityService (Screen lesen + steuern)
-- [x] Hintergrund-Agent (ForegroundService)
-- [x] Azure OpenAI + Azure AI Foundry
-- [x] SMS Tool
-- [x] Datei-Manager Tool
-- [x] Clipboard Tool
-- [ ] Kontakte Tool (nach Name suchen → Telefonnummer)
-- [ ] Kamera Tool (Foto + OCR)
-- [ ] Standort Tool (GPS)
-- [ ] Web-Suche Tool (Brave/Perplexity API)
-- [ ] Local LLM (Gemini Nano / llama.cpp)
-- [ ] Mehr-Schritt-Automatisierungen
+- [x] Voice input (STT) + output (TTS)
+- [x] Floating overlay bubble with full voice loop
+- [x] Quick Settings tile
+- [x] Full screen control via AccessibilityService
+- [x] Background agent (ForegroundService)
+- [x] Anthropic Claude support
+- [x] Azure OpenAI + Azure AI Foundry support
+- [x] WhatsApp, SMS, Calendar, Alarm tools
+- [x] File Manager + Clipboard tools
+- [x] Persistent memory store
+- [x] Multi-session chat history
+- [ ] Contacts tool (search by name → phone number)
+- [ ] Camera tool (photo + OCR)
+- [ ] Location tool (GPS)
+- [ ] Web search tool (Brave / Perplexity API)
+- [ ] Local LLM support (Gemini Nano / llama.cpp)
+- [ ] Multi-step automation builder
+
+---
+
+## License
+
+MIT — free to use, modify, and distribute. See [LICENSE](LICENSE).
+
+---
+
+<div align="center">
+
+Built with ❤️ for the open-source AI community.
+
+**[GitHub](https://github.com/Hamido212/OpenPaw)** · **[Report a Bug](https://github.com/Hamido212/OpenPaw/issues)** · **[Request a Feature](https://github.com/Hamido212/OpenPaw/issues)**
+
+</div>
+
+---
+
+## X / Twitter Launch Post
+
+```
+Ich habe eine KI-Agent App für Android gebaut – und sie ist Open Source. 🐾
+
+OpenPaw läuft direkt auf deinem Handy und kann:
+→ Deinen Bildschirm lesen & steuern (auch in anderen Apps)
+→ Per Sprache bedient werden – ohne die App zu öffnen
+→ WhatsApp, SMS, Kalender, Alarme und mehr ausführen
+→ Mit Claude, GPT-4o, Kimi-K2.5 oder Azure AI arbeiten
+
+Einfach auf die schwebende 🐾-Blase tippen, sprechen – fertig.
+
+Kein Cloud-Zwang, kein Abo, kein Google Assistant.
+Komplett Open Source unter MIT-Lizenz.
+
+🔗 github.com/Hamido212/OpenPaw
+
+#Android #OpenSource #AI #AgentAI #Kotlin #LLM #OpenPaw
+```

@@ -58,9 +58,23 @@ class ScreenTool @Inject constructor() : Tool {
             "click" -> {
                 val query = input["query"] as? String
                     ?: return ToolResult(false, "Provide 'query' (text to click).")
-                val ok = service.clickElement(query)
-                if (ok) ToolResult(true, "Clicked: '$query'")
-                else ToolResult(false, "Element '$query' not found on screen. Try 'read' first to see what's visible.")
+
+                // 1. Try accessibility node click (instant, works when node is clickable)
+                if (service.clickElement(query)) {
+                    return ToolResult(true, "Clicked: '$query'")
+                }
+
+                // 2. Fallback: find the element's visual bounds and gesture-tap the center.
+                //    This handles cases where text lives in a non-clickable child of a clickable parent.
+                val bounds = service.getNodeBounds(query)
+                if (bounds != null && !bounds.isEmpty) {
+                    val ok = suspendCancellableCoroutine<Boolean> { cont ->
+                        service.tapAt(bounds.centerX().toFloat(), bounds.centerY().toFloat()) { cont.resume(it) }
+                    }
+                    if (ok) return ToolResult(true, "Tapped '$query' at (${bounds.centerX()}, ${bounds.centerY()})")
+                }
+
+                ToolResult(false, "Element '$query' not found. Use 'read' to check what's visible.")
             }
 
             "input" -> {
@@ -74,9 +88,18 @@ class ScreenTool @Inject constructor() : Tool {
 
             "scroll" -> {
                 val dir = input["direction"] as? String ?: "down"
-                val ok = service.scroll(dir)
-                if (ok) ToolResult(true, "Scrolled $dir")
-                else ToolResult(false, "No scrollable element found.")
+
+                // 1. Try accessibility scroll (works when app exposes isScrollable=true)
+                if (service.scroll(dir)) {
+                    return ToolResult(true, "Scrolled $dir")
+                }
+
+                // 2. Fallback: gesture swipe — works in any app, even without a11y scroll nodes
+                val swiped = suspendCancellableCoroutine<Boolean> { cont ->
+                    service.swipe(dir) { cont.resume(it) }
+                }
+                if (swiped) ToolResult(true, "Scrolled $dir via gesture")
+                else ToolResult(false, "Could not scroll $dir.")
             }
 
             "swipe" -> {
