@@ -299,24 +299,3 @@ Built with ❤️ for the open-source AI community.
 </div>
 
 ---
-
-## X / Twitter Launch Post
-
-```
-Ich habe eine KI-Agent App für Android gebaut – und sie ist Open Source. 🐾
-
-OpenPaw läuft direkt auf deinem Handy und kann:
-→ Deinen Bildschirm lesen & steuern (auch in anderen Apps)
-→ Per Sprache bedient werden – ohne die App zu öffnen
-→ WhatsApp, SMS, Kalender, Alarme und mehr ausführen
-→ Mit Claude, GPT-4o, Kimi-K2.5 oder Azure AI arbeiten
-
-Einfach auf die schwebende 🐾-Blase tippen, sprechen – fertig.
-
-Kein Cloud-Zwang, kein Abo, kein Google Assistant.
-Komplett Open Source unter MIT-Lizenz.
-
-🔗 github.com/Hamido212/OpenPaw
-
-#Android #OpenSource #AI #AgentAI #Kotlin #LLM #OpenPaw
-```
